@@ -1,14 +1,21 @@
 package com.example.ttruserver2.models
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
-import com.bumptech.glide.request.target.Target
+import java.io.Serializable
 
 class SearchedRestaurantModel(
-    val restaurantPicture: Int,
-    val restaurantTitle: String,
-    val restaurantGrade: Double,
-    val restaurantDistance: Double,
-    val restaurantType: String,
-    val restaurantOnSale: Boolean
-)
+    val restaurantOid: String,
+    val type: String,
+    val title: String,
+    val grade: Double,
+    val distance: Double,
+    val onSale: Boolean,
+
+    val favoriteCount: Int,
+    val description: String,
+    val address: String,
+    val phone: String,
+    val originMenuList: ArrayList<OriginMenuModel>,
+    val lng: Double,
+    val lat: Double
+) : Serializable
 

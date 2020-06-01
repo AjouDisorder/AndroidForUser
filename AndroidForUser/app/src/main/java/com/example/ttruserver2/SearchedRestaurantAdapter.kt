@@ -6,20 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ttruserver2.models.SearchedRestaurantModel
 
 class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestaurantModel>) : RecyclerView.Adapter<SearchedRestaurantAdapter.CustomViewHolder>(){
+
+    val restaurantTypeToIcons = hashMapOf("뷔페&샐러드" to R.drawable.store_buffet, "술집" to R.drawable.store_drink,
+        "편의점" to R.drawable.store_convstore, "한식" to R.drawable.store_korean, "치킨" to R.drawable.store_chicken, "피자" to R.drawable.store_pizza,
+        "족발&보쌈" to R.drawable.store_jokbal, "돈까스&일식&회" to R.drawable.store_japan, "양식&아시안" to R.drawable.store_american,
+        "패스트푸드" to R.drawable.store_fastfood, "분식" to R.drawable.store_snack, "카페&디저트" to R.drawable.store_dessert,
+        "찜&탕&찌개" to R.drawable.store_soup, "도시락" to R.drawable.store_dosirak, "중국집" to R.drawable.store_china)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchedRestaurantAdapter.CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.restaurant_list_item, parent, false)
         return SearchedRestaurantAdapter.CustomViewHolder(view).apply {
             itemView.setOnClickListener {
                 val curPos : Int = adapterPosition
-                val restaurant : SearchedRestaurantModel = restaurantList.get(curPos)
-                Toast.makeText(parent.context, "이름 : ${restaurant.restaurantTitle}", Toast.LENGTH_SHORT).show()
+                val selectedRestaurant : SearchedRestaurantModel = restaurantList.get(curPos)
                 val intent = Intent(parent.context, SearchedMenuDetailActivity::class.java)
+                intent.putExtra("selectedRestaurant", selectedRestaurant)
                 parent.context.startActivity(intent)
             }
         }
@@ -30,22 +35,22 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
     }
 
     override fun onBindViewHolder(holder: SearchedRestaurantAdapter.CustomViewHolder, position: Int) {
-        holder.restaurantPicture.setImageResource(restaurantList.get(position).restaurantPicture)
-        holder.restaurantTitle.text = restaurantList.get(position).restaurantTitle
-        holder.restaurantGrade.text = restaurantList.get(position).restaurantGrade.toString()
-        holder.restaurantDistance.text = restaurantList.get(position).restaurantDistance.toString()
-        holder.restaurantType.text = restaurantList.get(position).restaurantType
-        if (!restaurantList.get(position).restaurantOnSale){    //False면 "할인중" 안보이게
+        holder.restaurantPicture.setImageResource(restaurantTypeToIcons[restaurantList[position].type]!!)
+        holder.restaurantType.text = restaurantList.get(position).type
+        holder.restaurantTitle.text = restaurantList.get(position).title
+        holder.restaurantGrade.text = restaurantList.get(position).grade.toString()
+        holder.restaurantDistance.text = restaurantList.get(position).distance.toString()
+        if (!restaurantList.get(position).onSale){    //False면 "할인중" 안보이게
             holder.restaurantOnSale.visibility = View.INVISIBLE
         }
     }
 
     class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val restaurantPicture = itemView.findViewById<ImageView>(R.id.iv_restaurantPicture)
+        val restaurantType = itemView.findViewById<TextView>(R.id.tv_restaurantType)
         val restaurantTitle = itemView.findViewById<TextView>(R.id.tv_restaurantTitle)
         val restaurantGrade = itemView.findViewById<TextView>(R.id.tv_restaurantGrade)
         val restaurantDistance = itemView.findViewById<TextView>(R.id.tv_restaurantDistance)
-        val restaurantType = itemView.findViewById<TextView>(R.id.tv_restaurantType)
         val restaurantOnSale = itemView.findViewById<TextView>(R.id.tv_onSale)
     }
 

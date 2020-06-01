@@ -1,34 +1,12 @@
 package com.example.ttruserver2.Retrofit
 
+import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 data class ResponseDTO(var userId:String? = null, var result:String? = null)
 
-//data class Data(val data: Accepted)
-//data class Accepted(val accepted: HashMap<String, Friend>)
-//data class Friend(val success: Boolean, val message: String)
-//data class ResponseDTO()
-
 interface IMyService{
-    /*
-    @FormUrlEncoded
-    @POST("boss/signup")
-    fun joinBoss(@Field("bossId") bossId: String,
-                 @Field("password") password: String,
-                 @Field("name") name: String
-                 //@Field("age") age: String,
-                 //@Field("sex") sex: String,
-                 //@Field("phone") phone: String
-    ): Call<ResponseDTO>
-
-    @FormUrlEncoded
-    @POST("boss/login")
-    fun loginBoss(@Field("bossId") email: String,
-                  @Field("password") password: String): Call<ResponseDTO>
-*/
     @FormUrlEncoded
     @POST("user/signup")
     fun signUpUser(@Field("userId") userId: String,
@@ -43,6 +21,41 @@ interface IMyService{
     @POST("user/login")
     fun loginUser(@Field("userId") email: String,
                   @Field("password") password: String): Call<ResponseDTO>
+
+    //Search Services
+    @GET("/user/getMenuListOfRestaurant")
+    fun getMenuListOfRestaurant(@Query("restaurant_id") restaurant_id:String): Call<ResponseBody>
+
+    @GET("/user/getMenuByTime")
+    fun getMenuByTime(@Query("year") year:Int,
+                      @Query("month") month:Int,
+                      @Query("date") date:Int,
+                      @Query("hour") hour:Int,
+                      @Query("min") min:Int,
+                      @Query("lat") lat:Double?,
+                      @Query("lng") lng:Double?): Call<ResponseBody>
+
+    @GET("/user/getMenuByCategory")
+    fun getMenuByCategory(@Query("type") menuType:String,
+                          @Query("lat") lat:Double?,
+                          @Query("lng") lng:Double?): Call<ResponseBody>
+
+    @GET("/user/getRestaurantByCategory")
+    fun getRestaurantByCategory(  @Query("type") restaurantType:String,
+                                  @Query("lat") lat:Double?,
+                                  @Query("lng") lng:Double?): Call<ResponseBody>
+
+    @GET("getMenuBySearchBar")
+    fun getMenuBySearchBar(  @Query("title") menuTitle:String,
+                             @Query("lat") lat:Double?,
+                             @Query("lng") lng:Double?): Call<ResponseBody>
+
+    @GET("/user/getRestaurantBySearchBar")
+    fun getRestaurantBySearchBar(  @Query("title") restaurantTitle: String,
+                                   @Query("lat") lat:Double?,
+                                   @Query("lng") lng:Double?): Call<ResponseBody>
+
+
 
 
 
