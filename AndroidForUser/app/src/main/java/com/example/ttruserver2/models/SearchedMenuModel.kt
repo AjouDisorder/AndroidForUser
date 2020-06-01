@@ -1,7 +1,10 @@
 package com.example.ttruserver2.models
 
+import java.io.Serializable
+
 class SearchedMenuModel(
-    val menuPicture: Int,
+    val menuOid: String,
+    val menuType: String,
     val menuTitle: String,
     val startTime: String,
     val endTime: String,
@@ -10,4 +13,4 @@ class SearchedMenuModel(
     val discount: Int,
     val discountedPrice: Int,
     val originPrice: Int
-)
+) : Serializable

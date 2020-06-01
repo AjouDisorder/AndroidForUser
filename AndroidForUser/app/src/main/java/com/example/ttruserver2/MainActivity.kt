@@ -6,22 +6,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.ttruserver.ViewPagerAdapter
+import com.example.ttruserver2.Retrofit.IMyService
+import com.example.ttruserver2.Retrofit.RetrofitClient
+import com.example.ttruserver2.models.SearchedMenuModel
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-
-//import retrofit2.Call
-//import retrofit2.Callback
-//import retrofit2.Response
-//import retrofit2.Retrofit
-//import retrofit2.converter.gson.GsonConverterFactory
-
+import okhttp3.ResponseBody
+import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var toolbar: Toolbar //toolbar is androidx.appcompat.widget
@@ -30,23 +30,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     internal lateinit var viewpager : ViewPager
 
+    lateinit var iMyService: IMyService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//navigation
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
 
-        drawerLayout = findViewById(R.id.drawer_layout)
-        navView = findViewById(R.id.nav_view)
+        //retrofit
+        val retrofit = RetrofitClient.getInstance()
+        iMyService = retrofit.create(IMyService::class.java)
 
-        val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar, 0, 0
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-        navView.setNavigationItemSelectedListener(this)
-//navigation
+        if (UserData.getLng() == null){     //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+            UserData.setLng(127.043496)
+            UserData.setLat(37.279965)
+        }
 
         val menuIcons = arrayOf( R.drawable.menu_time, R.drawable.menu_chickenpizza, R.drawable.menu_jokbal,
             R.drawable.menu_japan, R.drawable.menu_nation, R.drawable.menu_hambur, R.drawable.menu_rice,
@@ -79,9 +76,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //findByCategory
         main_gridview.setOnItemClickListener { parent, view, position, id ->
             if (selectedIconType == 0){
-                Toast.makeText(this, "카테고리 : ${menuTypes[position]}", Toast.LENGTH_SHORT).show()
+
+                iMyService.getMenuByCategory(menuTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        var result = response.body()?.string()
+                        var jsonArray = JSONArray(result)
+                        var searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+
+                        for (i in 0.until(jsonArray.length())){
+                            var jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                            var _id = jsonObject.getString("_id")
+                            var title = jsonObject.getString("title")
+                            var startTime = jsonObject.getString("startDateObject").substring(5, 16)
+                            var endTime = jsonObject.getString("endDateObject").substring(5, 16)
+                            var distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            var quantity = jsonObject.getInt("quantity")
+                            var discount = jsonObject.getInt("discount")
+                            var originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
+                            var discountedPrice = originPrice * discount / 100
+
+                            searchedMenuModelList.add(SearchedMenuModel(_id, menuTypes[position],
+                                title, startTime, endTime, distance, quantity, discount, discountedPrice, originPrice))
+                        }
+                        val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
+                        intent.putExtra("searchedMenuModelList", searchedMenuModelList)
+                        startActivity(intent)
+                    }
+                })
             }else if(selectedIconType == 1){
                 Toast.makeText(this, "카테고리 : ${storeTypes[position]}", Toast.LENGTH_SHORT).show()
+                iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng())
             }
         }
         //findBySearchBar
@@ -106,14 +134,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (p0.itemId) {
             R.id.user_profile-> {
                 Toast.makeText(this, "user_profile clicked", Toast.LENGTH_SHORT).show()
-//                val intent = Intent(this, LogInActivity::class.java)
-//                startActivity(intent)
             }
             R.id.navigation_home-> {
                 Toast.makeText(this, "navigation_home clicked!", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, LogInActivity::class.java)
-                val intent2 = Intent(this, TestActivity::class.java)
-                startActivity(intent)
             }
             R.id.navigation_bike -> {
                 Toast.makeText(this, "navigation_bike clicked", Toast.LENGTH_SHORT).show()
@@ -142,13 +165,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
-    }
-    //navigation back btn process
-    override fun onBackPressed() {
-        if(drawer_layout.isDrawerOpen(GravityCompat.START)){
-            drawer_layout.closeDrawers()
-        } else {
-            super.onBackPressed()
-        }
     }
 }
