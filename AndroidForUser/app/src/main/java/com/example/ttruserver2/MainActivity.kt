@@ -14,6 +14,7 @@ import com.example.ttruserver.ViewPagerAdapter
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
 import com.example.ttruserver2.models.SearchedMenuModel
+import com.example.ttruserver2.models.SearchedRestaurantModel
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.content_main.*
 import okhttp3.ResponseBody
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //findByCategory
         main_gridview.setOnItemClickListener { parent, view, position, id ->
             if (selectedIconType == 0){
-
+                //if 시간설정인 경우 따로
                 iMyService.getMenuByCategory(menuTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
@@ -91,8 +92,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                             var _id = jsonObject.getString("_id")
                             var title = jsonObject.getString("title")
-                            var startTime = jsonObject.getString("startDateObject").substring(5, 16)
-                            var endTime = jsonObject.getString("endDateObject").substring(5, 16)
+                            var startTime = jsonObject.getString("startDateObject")
+                                .substring(5, 16).replace("T", "일")
+                            var endTime = jsonObject.getString("endDateObject")
+                                .substring(5, 16).replace("T", "일")
                             var distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
                             var quantity = jsonObject.getInt("quantity")
                             var discount = jsonObject.getInt("discount")
@@ -108,8 +111,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     }
                 })
             }else if(selectedIconType == 1){
-                Toast.makeText(this, "카테고리 : ${storeTypes[position]}", Toast.LENGTH_SHORT).show()
-                iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng())
+                //if 지도로 보기인 경우 따로
+                iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        var result = response.body()?.string()
+                        var jsonArray = JSONArray(result)
+                        var searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+
+                        for (i in 0.until(jsonArray.length())){
+                            var jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                            var _id = jsonObject.getString("_id")
+                            var title = jsonObject.getString("title")
+                            var grade = jsonObject.getDouble("avrGrade")
+                            var distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            var onSale = true
+                            if (jsonObject.getJSONArray("menuidList").length() == 0){
+                                onSale = false
+                            }
+
+                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[position],
+                                title, grade, distance, onSale))
+                        }
+                        val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                        startActivity(intent)
+                    }
+                })
             }
         }
         //findBySearchBar
