@@ -23,7 +23,7 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
             itemView.setOnClickListener {
                 val curPos : Int = adapterPosition
                 val selectedRestaurant : SearchedRestaurantModel = restaurantList.get(curPos)
-                val intent = Intent(parent.context, SearchedMenuDetailActivity::class.java)
+                val intent = Intent(parent.context, SearchedRestaurantDetailActivity::class.java)
                 intent.putExtra("selectedRestaurant", selectedRestaurant)
                 parent.context.startActivity(intent)
             }

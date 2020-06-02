@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".SearchedRestaurantListActivity"></activity>
         <activity android:name=".SearchedMenuListActivity" />
-        <activity android:name=".SearchedMenuDetailActivity" />
+        <activity android:name=".SearchedRestaurantDetailActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".LogInActivity" />
         <activity android:name=".SignUpActivity" />
