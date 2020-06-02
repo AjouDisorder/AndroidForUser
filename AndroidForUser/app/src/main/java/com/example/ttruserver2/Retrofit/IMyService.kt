@@ -55,7 +55,15 @@ interface IMyService{
                                    @Query("lat") lat:Double?,
                                    @Query("lng") lng:Double?): Call<ResponseBody>
 
-
+    //Ticket Services
+    @FormUrlEncoded
+    @POST("/user/createTicket")
+    fun createTicket(@Field("menu_id") menu_id: String,
+                     @Field("quantity") quantity: Int,
+                     @Field("user_id") user_id: String,
+                     @Field("totalPrice") totalPrice: Int,
+                     @Field("method") method: String,
+                     @Field("messageForBoss") messageForBoss: String): Call<ResponseBody>
 
 
 

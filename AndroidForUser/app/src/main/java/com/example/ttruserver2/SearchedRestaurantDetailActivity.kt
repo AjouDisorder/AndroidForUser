@@ -14,12 +14,12 @@ import com.example.ttruserver2.detailRestaurant.MenuFragment
 import com.example.ttruserver2.detailRestaurant.ReviewFragment
 import com.example.ttruserver2.models.SearchedRestaurantModel
 
-import kotlinx.android.synthetic.main.activity_searched_reataurant_detail.*
+import kotlinx.android.synthetic.main.activity_searched_restaurant_detail.*
 
 class SearchedRestaurantDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState : Bundle?){
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_searched_reataurant_detail)
+        setContentView(R.layout.activity_searched_restaurant_detail)
 
         val selectedRestaurant = intent.getSerializableExtra("selectedRestaurant") as SearchedRestaurantModel
 
