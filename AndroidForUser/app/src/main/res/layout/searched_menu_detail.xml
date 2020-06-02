@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchedMenuDetailActivity">
+
+    <TextView
+        android:id="@+id/percent"
+        android:layout_width="109dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/round_border"
+        android:text="할인율"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/searched_menu_disP"
+        app:layout_constraintTop_toBottomOf="@+id/searched_menu_disP" />
+
+    <TextView
+        android:id="@+id/tv_discountPriceInMenu"
+        android:layout_width="67dp"
+        android:layout_height="25dp"
+        android:background="@drawable/round_border"
+        android:text="4900"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_originPriceInMenu"
+        app:layout_constraintTop_toTopOf="@+id/imageView11" />
+
+    <TextView
+        android:id="@+id/tv_discountInMenu"
+        android:layout_width="67dp"
+        android:layout_height="25dp"
+        android:background="@drawable/round_border"
+        android:text="17"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_discountPriceInMenu"
+        app:layout_constraintTop_toTopOf="@+id/imageView12" />
+
+    <ImageView
+        android:id="@+id/imageView11"
+        android:layout_width="25dp"
+        android:layout_height="31dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="@+id/imageView7"
+        app:layout_constraintTop_toBottomOf="@+id/imageView7"
+        app:srcCompat="@drawable/dicount" />
+
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="25dp"
+        android:layout_height="31dp"
+        app:layout_constraintStart_toStartOf="@+id/imageView11"
+        app:layout_constraintTop_toTopOf="@+id/percent"
+        app:srcCompat="@drawable/per" />
+
+    <TextView
+        android:id="@+id/tv_originPriceInMenu"
+        android:layout_width="67dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/round_border"
+        android:text="5600"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView7"
+        app:layout_constraintTop_toBottomOf="@+id/tv_titleInMenu" />
+
+    <TextView
+        android:id="@+id/tv_restaurantTitleInMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Macdonald"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="40sp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <ImageView
+        android:id="@+id/searched_menu_pic"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_restaurantTitleInMenu"
+        app:srcCompat="@drawable/menu_hambur" />
+
+    <TextView
+        android:id="@+id/searched_menu_originP"
+        android:layout_width="109dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/round_border"
+        android:text="원가"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_titleInMenu" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="25dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="83dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toEndOf="@+id/searched_menu_originP"
+        app:layout_constraintTop_toBottomOf="@+id/tv_titleInMenu"
+        app:srcCompat="@drawable/money" />
+
+    <TextView
+        android:id="@+id/searched_menu_disP"
+        android:layout_width="109dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/round_border"
+        android:text="특가"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searched_menu_originP" />
+
+    <Button
+        android:id="@+id/btn_toRestaurant"
+        android:layout_width="172dp"
+        android:layout_height="67dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginBottom="60dp"
+        android:text="이 가게 다른 메뉴 보기"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_toPayment"
+        android:layout_width="172dp"
+        android:layout_height="67dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="60dp"
+        android:text="식권 발급"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_titleInMenu"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="10dp"
+        android:text="Bigmac"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_originPriceInMenu"
+        app:layout_constraintTop_toBottomOf="@+id/searched_menu_pic"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="31dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:text="원"
+        app:layout_constraintStart_toEndOf="@+id/tv_originPriceInMenu"
+        app:layout_constraintTop_toBottomOf="@+id/tv_titleInMenu" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:text="원"
+        app:layout_constraintStart_toStartOf="@+id/textView27"
+        app:layout_constraintTop_toTopOf="@+id/tv_discountPriceInMenu" />
+
+    <TextView
+        android:id="@+id/textView30"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:text="%"
+        app:layout_constraintStart_toStartOf="@+id/textView29"
+        app:layout_constraintTop_toTopOf="@+id/tv_discountInMenu" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
