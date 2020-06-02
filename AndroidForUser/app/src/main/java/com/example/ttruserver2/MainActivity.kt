@@ -78,39 +78,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //findByCategory
         main_gridview.setOnItemClickListener { parent, view, position, id ->
             if (selectedIconType == 0){
-                //if 시간설정인 경우 따로
-                iMyService.getMenuByCategory(menuTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
-                    }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        val result = response.body()?.string()
-                        val jsonArray = JSONArray(result)
-                        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
-
-                        for (i in 0.until(jsonArray.length())){
-                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                            val _id = jsonObject.getString("_id")
-                            val title = jsonObject.getString("title")
-                            val startTime = jsonObject.getString("startDateObject")
-                                .substring(5, 16).replace("T", " ")
-                            val endTime = jsonObject.getString("endDateObject")
-                                .substring(5, 16).replace("T", " ")
-                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                            val quantity = jsonObject.getInt("quantity")
-                            val discount = jsonObject.getInt("discount")
-                            val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                            val discountedPrice = originPrice * discount / 100
-
-                            searchedMenuModelList.add(SearchedMenuModel(_id, menuTypes[position], title,
-                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice))
+                if (menuTypes[position] == "시간 검색"){
+                    //if 시간설정인 경우 따로
+                }else{
+                    iMyService.getMenuByCategory(menuTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                         }
-                        val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
-                        intent.putExtra("searchedMenuModelList", searchedMenuModelList)
-                        startActivity(intent)
-                    }
-                })
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            val result = response.body()?.string()
+                            val jsonArray = JSONArray(result)
+                            val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+
+                            for (i in 0.until(jsonArray.length())){
+                                val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                                val _id = jsonObject.getString("_id")
+                                val restaurantTitle = jsonObject.getString("restaurantTitle")
+                                val title = jsonObject.getString("title")
+                                val startTime = jsonObject.getString("startDateObject")
+                                    .substring(5, 16).replace("T", " ")
+                                val endTime = jsonObject.getString("endDateObject")
+                                    .substring(5, 16).replace("T", " ")
+                                val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                                val quantity = jsonObject.getInt("quantity")
+                                val discount = jsonObject.getInt("discount")
+                                val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
+                                val discountedPrice = originPrice * discount / 100
+                                val method = jsonObject.getString("method")
+
+                                searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, menuTypes[position], title,
+                                    startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
+                            }
+                            val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
+                            intent.putExtra("searchedMenuModelList", searchedMenuModelList)
+                            startActivity(intent)
+                        }
+                    })
+                }
             }else if(selectedIconType == 1){
                 //if 지도로 보기인 경우 따로
                 iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {

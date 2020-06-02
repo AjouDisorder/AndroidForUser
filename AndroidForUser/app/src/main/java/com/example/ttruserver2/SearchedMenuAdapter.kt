@@ -1,5 +1,6 @@
 package com.example.ttruserver2
 
+import android.content.Intent
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ttruserver2.models.SearchedMenuModel
+import com.example.ttruserver2.models.SearchedRestaurantModel
 
 class SearchedMenuAdapter(private val menuList: ArrayList<SearchedMenuModel>) : RecyclerView.Adapter<SearchedMenuAdapter.CustomViewHolder>(){
 
@@ -23,9 +25,11 @@ class SearchedMenuAdapter(private val menuList: ArrayList<SearchedMenuModel>) : 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.menu_list_item, parent, false)
         return CustomViewHolder(view).apply {
             itemView.setOnClickListener {
-                val curPos : Int = adapterPosition
-                val menu : SearchedMenuModel = menuList[curPos]
-                Toast.makeText(parent.context, "이름 : ${menu.menuTitle}", Toast.LENGTH_SHORT).show()
+                val curPos: Int = adapterPosition
+                val selectedMenu: SearchedMenuModel = menuList[curPos]
+                val intent = Intent(parent.context, SearchedMenuDetailActivity::class.java)
+                intent.putExtra("selectedMenu", selectedMenu)
+                parent.context.startActivity(intent)
             }
         }
     }
