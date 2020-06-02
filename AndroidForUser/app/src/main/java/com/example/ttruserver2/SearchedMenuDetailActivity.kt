@@ -12,6 +12,7 @@ import android.view.View;
 import com.example.ttruserver2.detailRestaurant.InfoFragment
 import com.example.ttruserver2.detailRestaurant.MenuFragment
 import com.example.ttruserver2.detailRestaurant.ReviewFragment
+import com.example.ttruserver2.models.SearchedRestaurantModel
 
 import kotlinx.android.synthetic.main.activity_searched_menu_detail.*
 
@@ -19,35 +20,44 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState : Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searched_menu_detail)
-        println("!")
-        //page init
+
+        val selectedRestaurant = intent.getSerializableExtra("selectedRestaurant") as SearchedRestaurantModel
+
+        //menu fragment init
+        val fragmentMenu = MenuFragment()
+        var restaurantBundle = Bundle()
+        restaurantBundle.putString("restaurantOid", selectedRestaurant.restaurantOid)
+        restaurantBundle.putDouble("restaurantDistance", selectedRestaurant.distance)
+        restaurantBundle.putParcelableArrayList("originMenuList", selectedRestaurant.originMenuList)
+        fragmentMenu.arguments = restaurantBundle
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fl_detailMenu, MenuFragment())
+            .replace(R.id.fl_detailMenu, fragmentMenu)
             .commit()
         //restaurant data assign
-        tv_restaurantTitle.text = "민석 치킨"
-        var bundle = Bundle()
-        bundle.putString("description", "가게정보는 다음과 같음")
-        bundle.putString("address", "가게주소는 다음과 같음")
-        tv_rating.text = (3.5).toString();  ratingBar.rating = 3.5F;
-        tv_favoriteCount.text = (100).toString();   var favoriteCount = 100
-        tv_distance.text = (0.6).toString()
+        tv_restaurantTitle.text = selectedRestaurant.title
+        var infoBundle = Bundle()
+        infoBundle.putString("description", selectedRestaurant.description)
+        infoBundle.putString("address", selectedRestaurant.address)
+        tv_rating.text = (selectedRestaurant.grade).toString();
+        ratingBar.rating = selectedRestaurant.grade.toFloat()
+        tv_favoriteCount.text = (selectedRestaurant.favoriteCount).toString();
+        var favoriteCount = selectedRestaurant.favoriteCount
+        tv_distance.text = (selectedRestaurant.distance).toString()
         btn_dial.setOnClickListener{
             var intent = Intent(Intent.ACTION_DIAL)
-            intent.data = Uri.parse("tel:0102708932")
+            intent.data = Uri.parse("tel:${selectedRestaurant.phone}")
             if(intent.resolveActivity(packageManager) != null){
                 startActivity(intent)
             }
         }
-        //즐겨찾기 추가 되어있는지..ㄷ
+        //todo 즐겨찾기 추가 되어있는지
         var isFavorite : Boolean = false
         if (isFavorite){
             iv_isFavorite.setImageResource(R.drawable.fillheart)
         }else{
             iv_isFavorite.setImageResource(R.drawable.emptyheart)
         }
-
-        //즐겨찾기 버튼
+        //todo 즐겨찾기 버튼
         btn_setFavorite.setOnClickListener{
             if (isFavorite){    //즐겨찾기 해제
                 isFavorite = false
@@ -77,8 +87,9 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
                 }
 
                 val transaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-                val fragmentMenu = MenuFragment();
-                transaction.replace(R.id.fl_detailMenu, fragmentMenu);
+                //val fragmentMenu = MenuFragment()
+                fragmentMenu.arguments = restaurantBundle
+                transaction.replace(R.id.fl_detailMenu, fragmentMenu)
                 transaction.commit();
                 return false;
             }
@@ -98,7 +109,7 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
 
                 val transaction : FragmentTransaction = supportFragmentManager.beginTransaction()
                 val fragmentInfo = InfoFragment()
-                fragmentInfo.arguments = bundle
+                fragmentInfo.arguments = infoBundle
                 transaction.replace(R.id.fl_detailMenu, fragmentInfo)
                 transaction.commit();
                 return false;

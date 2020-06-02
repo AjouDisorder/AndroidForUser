@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager
 import com.example.ttruserver.ViewPagerAdapter
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
+import com.example.ttruserver2.models.OriginMenuModel
 import com.example.ttruserver2.models.SearchedMenuModel
 import com.example.ttruserver2.models.SearchedRestaurantModel
 import com.google.android.material.navigation.NavigationView
@@ -83,27 +84,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                     }
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        var result = response.body()?.string()
-                        var jsonArray = JSONArray(result)
-                        var searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+                        val result = response.body()?.string()
+                        val jsonArray = JSONArray(result)
+                        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
 
                         for (i in 0.until(jsonArray.length())){
-                            var jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
-                            var _id = jsonObject.getString("_id")
-                            var title = jsonObject.getString("title")
-                            var startTime = jsonObject.getString("startDateObject")
-                                .substring(5, 16).replace("T", "일")
-                            var endTime = jsonObject.getString("endDateObject")
-                                .substring(5, 16).replace("T", "일")
-                            var distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                            var quantity = jsonObject.getInt("quantity")
-                            var discount = jsonObject.getInt("discount")
-                            var originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                            var discountedPrice = originPrice * discount / 100
+                            val _id = jsonObject.getString("_id")
+                            val title = jsonObject.getString("title")
+                            val startTime = jsonObject.getString("startDateObject")
+                                .substring(5, 16).replace("T", " ")
+                            val endTime = jsonObject.getString("endDateObject")
+                                .substring(5, 16).replace("T", " ")
+                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            val quantity = jsonObject.getInt("quantity")
+                            val discount = jsonObject.getInt("discount")
+                            val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
+                            val discountedPrice = originPrice * discount / 100
 
-                            searchedMenuModelList.add(SearchedMenuModel(_id, menuTypes[position],
-                                title, startTime, endTime, distance, quantity, discount, discountedPrice, originPrice))
+                            searchedMenuModelList.add(SearchedMenuModel(_id, menuTypes[position], title,
+                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice))
                         }
                         val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
                         intent.putExtra("searchedMenuModelList", searchedMenuModelList)
@@ -117,24 +118,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                     }
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        var result = response.body()?.string()
-                        var jsonArray = JSONArray(result)
-                        var searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+                        val result = response.body()?.string()
+                        val jsonArray = JSONArray(result)
+                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
 
                         for (i in 0.until(jsonArray.length())){
-                            var jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
-                            var _id = jsonObject.getString("_id")
-                            var title = jsonObject.getString("title")
-                            var grade = jsonObject.getDouble("avrGrade")
-                            var distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            val _id = jsonObject.getString("_id")
+                            val title = jsonObject.getString("title")
+                            val grade = jsonObject.getDouble("avrGrade")
+                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
                             var onSale = true
                             if (jsonObject.getJSONArray("menuidList").length() == 0){
                                 onSale = false
                             }
+                            val favoriteCount = jsonObject.getInt("favoriteCount")
+                            val description = jsonObject.getString("description")
+                            val address = jsonObject.getString("address")
+                            val phone = jsonObject.getString("phone")
 
-                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[position],
-                                title, grade, distance, onSale))
+                            var originMenuList =  arrayListOf<OriginMenuModel>()
+                            val originMenuJson = jsonObject.getJSONArray("originMenuList")
+                            for(i in 0.until(originMenuJson.length())){
+                                val originMenu: JSONObject = originMenuJson.getJSONObject(i)
+                                val originMenuTitle = originMenu.getString("title")
+                                val originMenuPrice = originMenu.getInt("originPrice")
+                                originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
+                            }
+
+                            val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                            val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+
+                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[position], title, grade,
+                                distance, onSale, favoriteCount, description, address, phone, originMenuList,
+                                lng as Double, lat as Double))
                         }
                         val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
                         intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
