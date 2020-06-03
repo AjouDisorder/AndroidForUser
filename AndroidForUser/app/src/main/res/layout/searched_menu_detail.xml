@@ -6,11 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".SearchedMenuDetailActivity">
 
+    <Button
+        android:id="@+id/button2"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="91dp"
+        android:layout_height="33dp"
+        android:text="지도 보기"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_discountInMenu"
+        app:layout_constraintTop_toTopOf="@+id/imageView9" />
+
+    <ImageView
+        android:id="@+id/imageView9"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/imageView12"
+        app:layout_constraintTop_toBottomOf="@+id/imageView12"
+        app:srcCompat="@drawable/store_map" />
+
     <TextView
         android:id="@+id/percent"
         android:layout_width="109dp"
         android:layout_height="32dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/round_border"
         android:text="할인율"
         android:textAlignment="center"
