@@ -1,10 +1,11 @@
 package com.example.ttruserver2.Retrofit
 
+import android.text.Editable
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
-data class ResponseDTO(var userId:String? = null, var result:String? = null)
+data class ResponseDTO(var _id:String? = null, var userId:String? = null, var name:String? = null)
 
 interface IMyService{
     @FormUrlEncoded
@@ -20,7 +21,7 @@ interface IMyService{
     @FormUrlEncoded
     @POST("user/login")
     fun loginUser(@Field("userId") email: String,
-                  @Field("password") password: String): Call<ResponseDTO>
+                  @Field("password") password: String): Call<ResponseBody>
 
     //Search Services
     @GET("/user/getMenuListOfRestaurant")
@@ -60,10 +61,11 @@ interface IMyService{
     @POST("/user/createTicket")
     fun createTicket(@Field("menu_id") menu_id: String,
                      @Field("quantity") quantity: Int,
-                     @Field("user_id") user_id: String,
-                     @Field("totalPrice") totalPrice: Int,
+                     @Field("user_id") user_id: String?,
+                     @Field("totalPrice") totalPrice: String,
                      @Field("method") method: String,
-                     @Field("messageForBoss") messageForBoss: String): Call<ResponseBody>
+                     @Field("messageForBoss") messageForBoss: Editable
+    ): Call<ResponseBody>
 
 
 
