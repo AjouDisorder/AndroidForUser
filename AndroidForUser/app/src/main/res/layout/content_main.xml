@@ -25,6 +25,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/Locationtxt"
                     style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
                     android:layout_width="328dp"
                     android:layout_height="wrap_content"
