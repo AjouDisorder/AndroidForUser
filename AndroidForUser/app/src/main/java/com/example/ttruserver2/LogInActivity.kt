@@ -14,6 +14,9 @@ import com.example.ttruserver2.Retrofit.RetrofitClient
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import kotlinx.android.synthetic.main.main_menu_header.*
+import okhttp3.ResponseBody
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,26 +64,23 @@ class LogInActivity : AppCompatActivity() {
             return;
         }
 
-        iMyService.loginUser(id, password).enqueue(object :
-            Callback<ResponseDTO> {
-            override fun onFailure(call: Call<ResponseDTO>?, t: Throwable?) {
-                Toast.makeText(this@LogInActivity, "login fail!", Toast.LENGTH_LONG).show()
+        iMyService.loginUser(id, password).enqueue(object : Callback<ResponseBody>{
+            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                Toast.makeText(this@LogInActivity, "$t", Toast.LENGTH_LONG).show()
             }
 
-            override fun onResponse(
-                call: Call<ResponseDTO>?,
-                response: Response<ResponseDTO>?
-            ) {
-                Toast.makeText(this@LogInActivity,response?.body().toString(), Toast.LENGTH_LONG).show()
-                println(response?.body()?.userId.toString())
-
-//                val userid = response?.body()?.userId.toString()
-//                userid.get().
-//                user_id.setText(response?.body()?.userId.toString())
-
-                val intent = Intent(this@LogInActivity, MainActivity::class.java)
-                startActivity(intent)
-
+            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                val result = response?.body()?.string()
+                val jsonObject = JSONObject(result)
+                if(jsonObject.has("result")){
+                    //Toast.makeText(this@CreateTicketActivity, "${UserData.getOid()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@LogInActivity, "아이디나 비밀번호를 확인하세요", Toast.LENGTH_LONG).show()
+                }else{
+                    UserData.setOid(jsonObject.getString("_id"))
+                    UserData.setUid(jsonObject.getString("userId"))
+                    UserData.setName(jsonObject.getString("name"))
+                    finish()
+                }
             }
         })
     }
