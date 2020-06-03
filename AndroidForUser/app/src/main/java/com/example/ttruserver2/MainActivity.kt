@@ -1,12 +1,21 @@
 package com.example.ttruserver2
 
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager.widget.ViewPager
@@ -24,6 +33,8 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
+import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var toolbar: Toolbar //toolbar is androidx.appcompat.widget
@@ -34,6 +45,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     lateinit var iMyService: IMyService
 
+    var locationManager : LocationManager? = null
+    private val REQUEST_CODE_LOCATION : Int = 2
+    var address : String = ""
+    var latitude : Double? = null
+    var longitude : Double? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,9 +60,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val retrofit = RetrofitClient.getInstance()
         iMyService = retrofit.create(IMyService::class.java)
 
-        if (UserData.getLng() == null){     //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
-            UserData.setLng(127.043496)
-            UserData.setLat(37.279965)
+        Locationtxt.setOnClickListener {
+            val intent = Intent(this@MainActivity, SetAddressActivity::class.java)
+            startActivity(intent)
+        }
+        /*
+        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+            getCurrentLoc()
+            Locationtxt.text = address
+            UserData.setLng(longitude as Double)
+            UserData.setLat(latitude as Double)
+        }else{
+            Locationtxt.text = UserData.getAddress()
+        }*/
+        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+            UserData.setLng(127.046532)
+            UserData.setLat(37.283602)
         }
 
         val menuIcons = arrayOf( R.drawable.menu_time, R.drawable.menu_chickenpizza, R.drawable.menu_jokbal,
@@ -166,13 +197,91 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         //findBySearchBar
         iv_searchBtn.setOnClickListener{
-            var intent = Intent(this, SearchedMenuListActivity::class.java)
             if (selectedIconType == 0){
-                intent = Intent(this, SearchedMenuListActivity::class.java)
+                iMyService.getMenuBySearchBar(et_searchBar.text.toString(), UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        val result = response.body()?.string()
+                        val jsonArray = JSONArray(result)
+                        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+
+                        for (i in 0.until(jsonArray.length())){
+                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                            val _id = jsonObject.getString("_id")
+                            val restaurantTitle = jsonObject.getString("restaurantTitle")
+                            val menuType = jsonObject.getString("type")
+                            val title = jsonObject.getString("title")
+                            val startTime = jsonObject.getString("startDateObject").substring(11, 16)
+                            val endTime = jsonObject.getString("endDateObject").substring(11, 16)
+                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            val quantity = jsonObject.getInt("quantity")
+                            val discount = jsonObject.getInt("discount")
+                            val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
+                            val discountedPrice = originPrice * discount / 100
+                            val method = jsonObject.getString("method")
+
+                            searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, menuType, title,
+                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
+                        }
+                        val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
+                        intent.putExtra("searchedMenuModelList", searchedMenuModelList)
+                        startActivity(intent)
+                    }
+                })
+
             }else if(selectedIconType == 1){
-                intent = Intent(this, SearchedRestaurantListActivity::class.java)
+
+                iMyService.getRestaurantBySearchBar(et_searchBar.text.toString(), UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                    }
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        val result = response.body()?.string()
+                        val jsonArray = JSONArray(result)
+                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+
+                        for (i in 0.until(jsonArray.length())){
+                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                            val _id = jsonObject.getString("_id")
+                            val storeType = jsonObject.getString("type")
+                            val title = jsonObject.getString("title")
+                            val grade = jsonObject.getDouble("avrGrade")
+                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                            var onSale = true
+                            if (jsonObject.getJSONArray("menuidList").length() == 0){
+                                onSale = false
+                            }
+                            val favoriteCount = jsonObject.getInt("favoriteCount")
+                            val description = jsonObject.getString("description")
+                            val address = jsonObject.getString("address")
+                            val phone = jsonObject.getString("phone")
+
+                            var originMenuList =  arrayListOf<OriginMenuModel>()
+                            val originMenuJson = jsonObject.getJSONArray("originMenuList")
+                            for(i in 0.until(originMenuJson.length())){
+                                val originMenu: JSONObject = originMenuJson.getJSONObject(i)
+                                val originMenuTitle = originMenu.getString("title")
+                                val originMenuPrice = originMenu.getInt("originPrice")
+                                originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
+                            }
+
+                            val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                            val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+
+                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeType, title, grade,
+                                distance, onSale, favoriteCount, description, address, phone, originMenuList,
+                                lng as Double, lat as Double))
+                        }
+                        val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                        startActivity(intent)
+                    }
+                })
             }
-            startActivity(intent)
         }
 
 
@@ -217,5 +326,44 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+    private fun getCurrentLoc(){
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager?
+        val userLocation: Location = getLatLng()
+        if(userLocation != null){
+            latitude = userLocation.latitude
+            longitude = userLocation.longitude
+            Log.d("check current location", "현재 내 위치값 : $latitude, $longitude")
+            //Locationtxt.text = "Your Current Coordinates are : \nLat:" + latitude + " ; Long:" + longitude
+
+            val mGeocoder = Geocoder(applicationContext, Locale.KOREAN)
+            var mResultList : List<Address>? = null
+
+            try {
+                mResultList = mGeocoder.getFromLocation(
+                    latitude!!, longitude!!, 1
+                )
+            }catch (e: IOException){
+                e.printStackTrace()
+            }
+            if(mResultList != null){
+                Log.d("check current location", mResultList[0].getAddressLine(0))
+                address = mResultList[0].getAddressLine(0)
+                address = address.substring(5)
+                //Addersstxt.text = "Your Current Address is : \n" + currentLocation
+            }
+        }
+    }
+    private fun getLatLng() : Location {
+        var currentLatLng: Location? = null
+        if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), this.REQUEST_CODE_LOCATION)
+            getLatLng()
+        }else{
+            val locationProvider = LocationManager.GPS_PROVIDER
+            currentLatLng = locationManager?.getLastKnownLocation(locationProvider)
+        }
+        return currentLatLng!!
     }
 }

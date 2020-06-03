@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CreateTicketActivity"></activity>
+        <activity android:name=".SetAddressActivity"></activity>
+        <activity android:name=".CreateTicketActivity" />
         <activity android:name=".SearchedRestaurantListActivity" />
         <activity android:name=".SearchedMenuListActivity" />
         <activity android:name=".SearchedRestaurantDetailActivity" />
