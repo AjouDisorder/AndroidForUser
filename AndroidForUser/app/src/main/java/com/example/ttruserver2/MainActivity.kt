@@ -96,10 +96,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val _id = jsonObject.getString("_id")
                                 val restaurantTitle = jsonObject.getString("restaurantTitle")
                                 val title = jsonObject.getString("title")
-                                val startTime = jsonObject.getString("startDateObject")
-                                    .substring(5, 16).replace("T", " ")
-                                val endTime = jsonObject.getString("endDateObject")
-                                    .substring(5, 16).replace("T", " ")
+                                val startTime = jsonObject.getString("startDateObject").substring(11, 16)
+                                val endTime = jsonObject.getString("endDateObject").substring(11, 16)
                                 val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
                                 val quantity = jsonObject.getInt("quantity")
                                 val discount = jsonObject.getInt("discount")

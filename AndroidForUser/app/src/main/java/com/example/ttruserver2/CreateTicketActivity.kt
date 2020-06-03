@@ -32,6 +32,7 @@ class CreateTicketActivity : AppCompatActivity() {
         tv_totalPriceInPay.text = selectedMenu.discountedPrice.toString()
         val menuMethod = selectedMenu.method
         val availableQuantity = selectedMenu.quantity
+        tv_availableQuantity.text = availableQuantity.toString()
         var quantity = 1
 
         //method radio box
