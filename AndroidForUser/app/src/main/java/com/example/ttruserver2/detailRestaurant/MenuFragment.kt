@@ -35,7 +35,7 @@ class MenuFragment : Fragment() {
         val restaurantDistance = restaurantBundle?.getDouble("restaurantDistance")
         val originMenuList = restaurantBundle?.getParcelableArrayList<OriginMenuModel>("originMenuList")
 
-        var searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
         iMyService.getMenuListOfRestaurant(restaurantOid as String).enqueue(object : retrofit2.Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(requireContext(), "Fail : $t", Toast.LENGTH_SHORT).show()
@@ -49,6 +49,7 @@ class MenuFragment : Fragment() {
 
                     val _id = jsonObject.getString("_id")
                     val restaurantTitle = jsonObject.getString("restaurantTitle")
+                    val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
                     val type = jsonObject.getString("type")
                     val title = jsonObject.getString("title")
                     val startTime = jsonObject.getString("startDateObject").substring(11, 16)
@@ -56,10 +57,10 @@ class MenuFragment : Fragment() {
                     val quantity = jsonObject.getInt("quantity")
                     val discount = jsonObject.getInt("discount")
                     val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                    val discountedPrice = originPrice * discount / 100
+                    val discountedPrice = originPrice - (originPrice * discount / 100)
                     val method = jsonObject.getString("method")
 
-                    searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, type, title, startTime, endTime,
+                    searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
                         restaurantDistance as Double, quantity, discount, discountedPrice, originPrice, method))
 
                     view.rv_menuListOnDetail.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

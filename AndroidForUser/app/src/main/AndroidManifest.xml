@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SetAddressActivity"></activity>
+        <activity android:name=".GetMenuByTimeActivity"></activity>
+        <activity android:name=".SetAddressActivity" />
         <activity android:name=".CreateTicketActivity" />
         <activity android:name=".SearchedRestaurantListActivity" />
         <activity android:name=".SearchedMenuListActivity" />
@@ -25,6 +26,11 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".Fragment.RestaurantInfo.RestaurantInfoActivity" />
         <activity android:name=".GridInfoActivity" />
+        <activity android:name=".BottomTab.BottomMyInfoActivity" />
+        <activity android:name=".BottomTab.Coupon.BottomCouponActivity" />
+        <activity android:name=".BottomTab.Coupon.BottomCouponInfoActivity" />
+        <activity android:name=".ConfirmLoginActivity" />
+        <activity android:name=".BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity" />
         <activity
             android:name=".IntroSplashActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -43,6 +49,7 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity>
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="cdc472c73396a1d18e66a92dc5b84b2e" />

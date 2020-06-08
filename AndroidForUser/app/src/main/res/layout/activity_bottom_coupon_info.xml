@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BottomTab.Coupon.BottomCouponInfoActivity">
+
+    <TextView
+        android:id="@+id/bottom_coupon_info_lecture_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="20dp"
+        android:textSize="30dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:text="음식이"/>
+<!--    <TextView-->
+<!--        android:id="@+id/bottom_coupon_info_lecture_review_count"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_lecture_text"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:text="식권정보_테스"/>-->
+    <View
+        android:id="@+id/bottom_coupon_info_header_line"
+        android:layout_width="match_parent"
+        android:background="@android:color/darker_gray"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_lecture_text"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_coupon_info_price_area"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_header_line"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_text"
+            android:text="음식점 이름:"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            android:layout_margin="30dp"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_real_text"
+            android:text="25.000원"
+            android:layout_width="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/bottom_coupon_info_price_text"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:text="주소:"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_price_text" />
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_real_text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25.000원"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            app:layout_constraintLeft_toRightOf="@id/bottom_coupon_info_price_text"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_text2"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_price_real_text" />
+        <TextView
+            android:id="@+id/bottom_coupon_info_text5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:text="식사 방식:"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_text2" />
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_real_text3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:text="25.000원"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toRightOf="@id/bottom_coupon_info_price_text"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_text5"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_price_real_text4" />
+        <TextView
+            android:id="@+id/bottom_coupon_info_text7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:text="구매 수량:"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_text5" />
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_real_text8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:text="25.000원"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toRightOf="@id/bottom_coupon_info_price_text"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_text7"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_price_real_text3" />
+        <TextView
+            android:id="@+id/bottom_coupon_info_text9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:text="총 액:"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_text7" />
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_price_real_text10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="25.000원"
+            android:layout_marginLeft="30dp"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toRightOf="@id/bottom_coupon_info_price_text"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_text9"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_price_real_text8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/bottom_coupon_info_header_bottom_line"
+        android:layout_width="match_parent"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/bottom_coupon_info_price_area"
+        android:layout_height="1dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_coupon_info_menu_bar"
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_header_bottom_line"
+        android:layout_height="60dp">
+
+        <TextView
+            android:id="@+id/bottom_coupon_info_restaurant_menu"
+            android:text="QR 코드"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/CustomTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/bottom_coupon_info_restaurant_info"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/bottom_coupon_info_restaurant_info"
+            android:text="지도"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/CustomTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/bottom_coupon_info_restaurant_review"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_restaurant_menu"/>
+        <TextView
+            android:id="@+id/bottom_coupon_info_restaurant_review"
+            android:text="리뷰작성"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/CustomTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/bottom_coupon_info_restaurant_info"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_coupon_info_menu_area"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_menu_bar"
+        android:layout_width="match_parent"
+        android:layout_height="350dp">
+        <FrameLayout
+            android:id="@+id/bottom_coupon_info_fragment_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"/>
+
+        <ImageView
+            android:id="@+id/bottom_coupon_info_qrcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottom_coupon_info_fragment_area" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
