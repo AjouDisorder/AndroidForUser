@@ -5,6 +5,7 @@ import java.io.Serializable
 class SearchedMenuModel(
     val menuOid: String,
     val restaurantTitle : String,
+    val restaurantOid: String,
     val menuType: String,
     val menuTitle: String,
     val startTime: String,

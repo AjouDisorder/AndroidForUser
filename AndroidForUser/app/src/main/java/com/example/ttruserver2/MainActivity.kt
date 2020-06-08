@@ -20,12 +20,15 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.ttruserver.ViewPagerAdapter
+import com.example.ttruserver2.BottomTab.Coupon.BottomCouponActivity
+import com.example.ttruserver2.BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
 import com.example.ttruserver2.models.OriginMenuModel
 import com.example.ttruserver2.models.SearchedMenuModel
 import com.example.ttruserver2.models.SearchedRestaurantModel
 import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.bottom.*
 import kotlinx.android.synthetic.main.content_main.*
 import okhttp3.ResponseBody
 import org.json.JSONArray
@@ -36,7 +39,7 @@ import retrofit2.Response
 import java.io.IOException
 import java.util.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(){
     lateinit var toolbar: Toolbar //toolbar is androidx.appcompat.widget
     lateinit var drawerLayout: DrawerLayout
     lateinit var navView: NavigationView
@@ -106,11 +109,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             et_searchBar.setHint("가게 검색")
             main_gridview.adapter = gridviewAdapter
         }
+        //하단 탭
+        bottom_tab_home.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        }
+        bottom_tab_favorite_restaurant.setOnClickListener {
+            val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
+            startActivity(intent)
+        }
+        bottom_tab_coupon.setOnClickListener {
+            val intent = Intent(this, BottomCouponActivity::class.java)
+            startActivity(intent)
+        }
+        bottom_tab_my_info.setOnClickListener {
+            if(UserData.getOid() == null){
+                val loginIntent = Intent(this, LogInActivity::class.java)
+                Toast.makeText(this, "user_obj_id: " + UserData.getOid(), Toast.LENGTH_SHORT).show()
+                startActivity(loginIntent)
+            } else {
+                Toast.makeText(this, "user_obj_id: " + UserData.getOid(), Toast.LENGTH_SHORT).show()
+            }
+        }
+
         //findByCategory
         main_gridview.setOnItemClickListener { parent, view, position, id ->
             if (selectedIconType == 0){
                 if (menuTypes[position] == "시간 검색"){
                     //if 시간설정인 경우 따로
+                    val intent = Intent(this@MainActivity, GetMenuByTimeActivity::class.java)
+                    startActivity(intent)
                 }else{
                     iMyService.getMenuByCategory(menuTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
@@ -126,6 +156,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                                 val _id = jsonObject.getString("_id")
                                 val restaurantTitle = jsonObject.getString("restaurantTitle")
+                                val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
                                 val title = jsonObject.getString("title")
                                 val startTime = jsonObject.getString("startDateObject").substring(11, 16)
                                 val endTime = jsonObject.getString("endDateObject").substring(11, 16)
@@ -133,10 +164,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                                 val quantity = jsonObject.getInt("quantity")
                                 val discount = jsonObject.getInt("discount")
                                 val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                                val discountedPrice = originPrice * discount / 100
+                                val discountedPrice = originPrice - (originPrice * discount / 100)
                                 val method = jsonObject.getString("method")
 
-                                searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, menuTypes[position], title,
+                                searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, menuTypes[position], title,
                                     startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
                             }
                             val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
@@ -212,6 +243,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                             val _id = jsonObject.getString("_id")
                             val restaurantTitle = jsonObject.getString("restaurantTitle")
+                            val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
                             val menuType = jsonObject.getString("type")
                             val title = jsonObject.getString("title")
                             val startTime = jsonObject.getString("startDateObject").substring(11, 16)
@@ -220,10 +252,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             val quantity = jsonObject.getInt("quantity")
                             val discount = jsonObject.getInt("discount")
                             val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                            val discountedPrice = originPrice * discount / 100
+                            val discountedPrice = originPrice - (originPrice * discount / 100)
                             val method = jsonObject.getString("method")
 
-                            searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, menuType, title,
+                            searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, menuType, title,
                                 startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
                         }
                         val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
@@ -283,50 +315,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 })
             }
         }
-
-
         //Advertisement
         viewpager = findViewById(R.id.main_ad_viewpager) as ViewPager
         val adapter = ViewPagerAdapter(this)
         viewpager.adapter = adapter
     }
 
-    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        when (p0.itemId) {
-            R.id.user_profile-> {
-                Toast.makeText(this, "user_profile clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_home-> {
-                Toast.makeText(this, "navigation_home clicked!", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_bike -> {
-                Toast.makeText(this, "navigation_bike clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_bus -> {
-                Toast.makeText(this, "navigation_bus clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_airplane -> {
-                Toast.makeText(this, "navigation_airplane clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_login -> {
-                Toast.makeText(this, "navigation_login clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_profile -> {
-                Toast.makeText(this, "navigation_profile clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_logout -> {
-                Toast.makeText(this, "navigation_logout clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_cloud -> {
-                Toast.makeText(this, "navigation_cloud clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.navigation_wifi -> {
-                Toast.makeText(this, "navigation_wifi clicked", Toast.LENGTH_SHORT).show()
-            }
-        }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
+
     private fun getCurrentLoc(){
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager?
         val userLocation: Location = getLatLng()

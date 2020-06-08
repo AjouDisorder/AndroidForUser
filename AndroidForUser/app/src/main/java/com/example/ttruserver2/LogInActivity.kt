@@ -9,7 +9,6 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import com.example.ttruserver2.Retrofit.IMyService
-import com.example.ttruserver2.Retrofit.ResponseDTO
 import com.example.ttruserver2.Retrofit.RetrofitClient
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
@@ -62,27 +61,25 @@ class LogInActivity : AppCompatActivity() {
         if(TextUtils.isEmpty(password)){
             Toast.makeText(this,"Password can not be null or empty",Toast.LENGTH_SHORT).show()
             return;
-        }
-
-        iMyService.loginUser(id, password).enqueue(object : Callback<ResponseBody>{
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
-                Toast.makeText(this@LogInActivity, "$t", Toast.LENGTH_LONG).show()
-            }
-
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val result = response?.body()?.string()
-                val jsonObject = JSONObject(result)
-                if(jsonObject.has("result")){
-                    //Toast.makeText(this@CreateTicketActivity, "${UserData.getOid()}", Toast.LENGTH_LONG).show()
-                    Toast.makeText(this@LogInActivity, "아이디나 비밀번호를 확인하세요", Toast.LENGTH_LONG).show()
-                }else{
-                    UserData.setOid(jsonObject.getString("_id"))
-                    UserData.setUid(jsonObject.getString("userId"))
-                    UserData.setName(jsonObject.getString("name"))
-                    finish()
+        }else{
+            iMyService.loginUser(id, password).enqueue(object : Callback<ResponseBody>{
+                override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+                    Toast.makeText(this@LogInActivity, "$t", Toast.LENGTH_LONG).show()
                 }
-            }
-        })
+                override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                    val result = response?.body()?.string()
+                    val jsonObject = JSONObject(result)
+                    if(jsonObject.has("result")){
+                        Toast.makeText(this@LogInActivity, "아이디나 비밀번호를 확인하세요", Toast.LENGTH_LONG).show()
+                    }else{
+                        UserData.setOid(jsonObject.getString("_id"))
+                        UserData.setUid(jsonObject.getString("userId"))
+                        UserData.setName(jsonObject.getString("name"))
+                        finish()
+                    }
+                }
+            })
+        }
     }
 
     // 앱의 해쉬 키 얻는 함수 kakao api

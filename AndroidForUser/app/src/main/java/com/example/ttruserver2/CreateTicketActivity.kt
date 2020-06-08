@@ -84,7 +84,7 @@ class CreateTicketActivity : AppCompatActivity() {
                         ticketMethod = "takeout"
                     }
                     iMyService.createTicket(selectedMenu.menuOid, quantity, UserData.getOid(), tv_totalPriceInPay.text as String,
-                        ticketMethod, tv_messageForBoss.text).enqueue(object : Callback<ResponseBody>{
+                        ticketMethod, tv_messageForBoss.text, selectedMenu.restaurantTitle).enqueue(object : Callback<ResponseBody>{
                         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             Toast.makeText(this@CreateTicketActivity, "$t", Toast.LENGTH_LONG).show()
                         }
