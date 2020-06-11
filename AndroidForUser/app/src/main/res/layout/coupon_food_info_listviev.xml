@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/ticket_backColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAF4C4"
+    android:orientation="horizontal">
 
 
     <LinearLayout
+        android:id="@+id/ticket_backColor1"
         android:layout_width="236dp"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -37,6 +41,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ticket_backColor2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">

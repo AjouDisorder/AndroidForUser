@@ -9,6 +9,8 @@ class UserData {
         private var address: String? = null
         private var lng: Double? = null
         private var lat: Double? = null
+        private var searchedMenuLog: ArrayList<String> = arrayListOf()
+        private var searchedRestaurantLog: ArrayList<String> = arrayListOf()
 
         fun setOid(id: String){ objectId = id }
         fun getOid() : String? { return objectId }
@@ -22,5 +24,20 @@ class UserData {
         fun getLng() : Double? { return lng }
         fun setLat(id: Double){ lat = id }
         fun getLat() : Double? { return lat }
+
+        fun getSearchedMenuLog(): ArrayList<String> { return searchedMenuLog}
+        fun addSearchedMenuLog(log: String){
+            searchedMenuLog.add(0, log)
+        }
+        fun deleteSearchedMenuLog(index: Int){
+            searchedMenuLog.removeAt(index)
+        }
+        fun getSearchedRestaurantLog() : ArrayList<String>{ return searchedRestaurantLog}
+        fun addSearchedRestaurantLog(log: String){
+            searchedRestaurantLog.add(0, log)
+        }
+        fun deleteSearchedRestaurantLog(index: Int){
+            searchedRestaurantLog.removeAt(index)
+        }
     }
 }

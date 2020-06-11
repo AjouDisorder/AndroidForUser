@@ -1,11 +1,14 @@
 package com.example.ttruserver2
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +28,7 @@ import java.util.*
 
 class GetMenuByTimeActivity : AppCompatActivity() {
     lateinit var iMyService: IMyService
+    private val animationDuration = 1000    //milliseconds
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
 
         val retrofit = RetrofitClient.getInstance()
         iMyService = retrofit.create(IMyService::class.java)
+        var nowTime = Date()
 
         //캘린더
         val cal: Calendar = Calendar.getInstance()
@@ -46,6 +51,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
             val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
                 tv_now.setText(""+year+"-"+(month+1)+"-" +dayOfMonth)
             }, y, m, d)
+            dpd.datePicker.minDate = System.currentTimeMillis()
             dpd.show()
         }
         tv_currentTime.setOnClickListener {
@@ -69,6 +75,12 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     val result = response.body()?.string()
                     val jsonArray = JSONArray(result)
+
+                    if (jsonArray.length() == 0){
+                        iv_invisBox2.visibility = View.VISIBLE
+                        iv_invisTeardrop2.visibility = View.VISIBLE
+                        tv_invisMenuList2.visibility = View.VISIBLE
+                    }
 
                     for (i in 0.until(jsonArray.length())){
                         val jsonObject: JSONObject = jsonArray.getJSONObject(i)
@@ -98,6 +110,18 @@ class GetMenuByTimeActivity : AppCompatActivity() {
             })
 
         time_search_refresh.setOnClickListener {
+            iv_invisBox2.visibility = View.INVISIBLE
+            iv_invisTeardrop2.visibility = View.INVISIBLE
+            tv_invisMenuList2.visibility = View.INVISIBLE
+
+            //animation
+            val rotAnimation = ObjectAnimator.ofFloat(time_search_refresh, "rotation", 0f, 360f)
+            rotAnimation.duration = animationDuration.toLong()
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(rotAnimation)
+            animatorSet.start()
+
+
             val date_data = tv_now.text.toString().split("-")
             val time_data = tv_currentTime.text.toString().split(":")
             val _year = date_data[0]
@@ -114,6 +138,12 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         val result = response.body()?.string()
                         val jsonArray = JSONArray(result)
+
+                        if (jsonArray.length() == 0){
+                            iv_invisBox2.visibility = View.VISIBLE
+                            iv_invisTeardrop2.visibility = View.VISIBLE
+                            tv_invisMenuList2.visibility = View.VISIBLE
+                        }
 
                         for (i in 0.until(jsonArray.length())){
                             val jsonObject: JSONObject = jsonArray.getJSONObject(i)
@@ -134,12 +164,10 @@ class GetMenuByTimeActivity : AppCompatActivity() {
 
                             searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title,
                                 startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
-
-                            rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)
-                            rv_getMenuByTime.setHasFixedSize(true)
-                            rv_getMenuByTime.adapter = SearchedMenuAdapter(searchedMenuModelList)
-                            Toast.makeText(this@GetMenuByTimeActivity, "${tv_now.text} ${tv_currentTime.text}", Toast.LENGTH_SHORT).show()
                         }
+                        rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)
+                        rv_getMenuByTime.setHasFixedSize(true)
+                        rv_getMenuByTime.adapter = SearchedMenuAdapter(searchedMenuModelList)
                     }
                 })
         }

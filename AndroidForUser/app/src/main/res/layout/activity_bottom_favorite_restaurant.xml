@@ -5,6 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity">
+
+    <View
+        android:id="@+id/content_line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/favorite_restaurant_info_title"
         android:gravity="center"
@@ -23,11 +32,13 @@
         app:layout_constraintTop_toTopOf="@+id/favorite_restaurant_info_title"
         android:paddingTop="60dp"
         android:paddingBottom="60dp"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="0dp">
+        app:layout_constraintBottom_toBottomOf="parent">
+
         <include layout="@layout/bottom"></include>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

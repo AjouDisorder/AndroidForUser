@@ -94,9 +94,9 @@ class CreateTicketActivity : AppCompatActivity() {
                             //서버 수량 초과
                             if(jsonObject.has("result")){
                                 //Toast.makeText(this@CreateTicketActivity, "${UserData.getOid()}", Toast.LENGTH_LONG).show()
-                                Toast.makeText(this@CreateTicketActivity, "메뉴 수량이 부족합니다", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@CreateTicketActivity, "메뉴 수량이 부족합니다", Toast.LENGTH_SHORT).show()
                             }else{
-                                Toast.makeText(this@CreateTicketActivity, "구매가 완료되었습니다", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@CreateTicketActivity, "구매가 완료되었습니다", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this@CreateTicketActivity, MainActivity::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

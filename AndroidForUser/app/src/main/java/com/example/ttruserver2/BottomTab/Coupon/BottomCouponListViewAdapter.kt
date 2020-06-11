@@ -1,15 +1,17 @@
 package com.example.ttruserver2.BottomTab.Coupon
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.ttruserver2.R
-import com.example.ttruserver2.models.BottomCouponContentsListModel
+import com.example.ttruserver2.models.TicketModel
 
-class BottomCouponListViewAdapter (val context: Context, val list: ArrayList<BottomCouponContentsListModel>):BaseAdapter() {
+class BottomCouponListViewAdapter (val context: Context, val list: ArrayList<TicketModel>):BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view : View
         val holder : ViewHolder
@@ -23,6 +25,7 @@ class BottomCouponListViewAdapter (val context: Context, val list: ArrayList<Bot
             holder.coupon_food_totalprice = view.findViewById(R.id.bottom_coupon_total_price)
             holder.coupon_food_pay_num = view.findViewById(R.id.bottom_coupon_pay_num)
             holder.coupon_food_method = view.findViewById(R.id.bottom_coupon_method)
+            holder.ticket_backColor = view.findViewById(R.id.ticket_backColor)
 
             view.tag = holder
         }else{
@@ -45,7 +48,11 @@ class BottomCouponListViewAdapter (val context: Context, val list: ArrayList<Bot
         holder.coupon_food_totalprice?.text = "총액: " + item.totalPrice.toString()
         holder.coupon_food_pay_num?.text = "구매 수량: "+item.quantity.toString()
         holder.coupon_food_method?.text = "식사 방식: "+method_
-
+        if (item.available == false){
+            holder.ticket_backColor?.setBackgroundColor(Color.rgb(255,255,255))
+        }else{
+            holder.ticket_backColor?.setBackgroundColor(Color.rgb(250,244,196))
+        }
         return view
     }
 
@@ -62,13 +69,13 @@ class BottomCouponListViewAdapter (val context: Context, val list: ArrayList<Bot
     }
 
     private class ViewHolder{
-//        var coupon_food_img : ImageView? = null
         var coupon_food_title : TextView? = null
         var coupon_food_restaurant_name : TextView? = null
         var coupon_food_restaurant_address : TextView? = null
         var coupon_food_totalprice : TextView? = null
         var coupon_food_pay_num : TextView? = null
         var coupon_food_method : TextView? = null
+        var ticket_backColor : LinearLayout? = null
     }
 
 }
