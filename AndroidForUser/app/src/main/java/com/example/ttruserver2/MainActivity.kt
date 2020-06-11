@@ -12,14 +12,13 @@ import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.ttruserver.ViewPagerAdapter
+import com.example.ttruserver2.BottomTab.BottomMyInfoActivity
 import com.example.ttruserver2.BottomTab.Coupon.BottomCouponActivity
 import com.example.ttruserver2.BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity
 import com.example.ttruserver2.Retrofit.IMyService
@@ -45,8 +44,8 @@ class MainActivity : AppCompatActivity(){
     lateinit var navView: NavigationView
 
     internal lateinit var viewpager : ViewPager
-
     lateinit var iMyService: IMyService
+    private var backBtnTime: Long = 0
 
     var locationManager : LocationManager? = null
     private val REQUEST_CODE_LOCATION : Int = 2
@@ -100,15 +99,16 @@ class MainActivity : AppCompatActivity(){
         discount_button.setOnClickListener {
             val gridviewAdapter = GridViewAdapter(this, menuIcons, menuTypes)//conveying img and text to gridviewadapter
             selectedIconType = 0
-            et_searchBar.setHint("메뉴 검색")
+            tv_searchBar.hint = "메뉴 검색"
             main_gridview.adapter = gridviewAdapter
         }
         restaurant_button.setOnClickListener {
             val gridviewAdapter = GridViewAdapter(this, storeIcons, storeTypes)//conveying img and text to gridviewadapter
             selectedIconType = 1
-            et_searchBar.setHint("가게 검색")
+            tv_searchBar.hint = "가게 검색"
             main_gridview.adapter = gridviewAdapter
         }
+
         //하단 탭
         bottom_tab_home.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -117,21 +117,31 @@ class MainActivity : AppCompatActivity(){
             startActivity(intent)
         }
         bottom_tab_favorite_restaurant.setOnClickListener {
-            val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
-            startActivity(intent)
+            if (UserData.getOid() == null){
+                val loginIntent = Intent(this, LogInActivity::class.java)
+                startActivity(loginIntent)
+            }else{
+                val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
+                startActivity(intent)
+            }
         }
         bottom_tab_coupon.setOnClickListener {
-            val intent = Intent(this, BottomCouponActivity::class.java)
-            startActivity(intent)
+            if (UserData.getOid() == null){
+                val loginIntent = Intent(this, LogInActivity::class.java)
+                startActivity(loginIntent)
+            }else{
+                val intent = Intent(this, BottomCouponActivity::class.java)
+                startActivity(intent)
+            }
         }
         bottom_tab_my_info.setOnClickListener {
             if(UserData.getOid() == null){
                 val loginIntent = Intent(this, LogInActivity::class.java)
-                Toast.makeText(this, "user_obj_id: " + UserData.getOid(), Toast.LENGTH_SHORT).show()
                 startActivity(loginIntent)
-            } else {
-                Toast.makeText(this, "user_obj_id: " + UserData.getOid(), Toast.LENGTH_SHORT).show()
-            }
+            }/* else {
+                val intent = Intent(this, BottomMyInfoActivity::class.java)
+                startActivity(intent)
+            }*/
         }
 
         //findByCategory
@@ -227,94 +237,12 @@ class MainActivity : AppCompatActivity(){
             }
         }
         //findBySearchBar
-        iv_searchBtn.setOnClickListener{
-            if (selectedIconType == 0){
-                iMyService.getMenuBySearchBar(et_searchBar.text.toString(), UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
-                    }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        val result = response.body()?.string()
-                        val jsonArray = JSONArray(result)
-                        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
-
-                        for (i in 0.until(jsonArray.length())){
-                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                            val _id = jsonObject.getString("_id")
-                            val restaurantTitle = jsonObject.getString("restaurantTitle")
-                            val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
-                            val menuType = jsonObject.getString("type")
-                            val title = jsonObject.getString("title")
-                            val startTime = jsonObject.getString("startDateObject").substring(11, 16)
-                            val endTime = jsonObject.getString("endDateObject").substring(11, 16)
-                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                            val quantity = jsonObject.getInt("quantity")
-                            val discount = jsonObject.getInt("discount")
-                            val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                            val discountedPrice = originPrice - (originPrice * discount / 100)
-                            val method = jsonObject.getString("method")
-
-                            searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, menuType, title,
-                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
-                        }
-                        val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
-                        intent.putExtra("searchedMenuModelList", searchedMenuModelList)
-                        startActivity(intent)
-                    }
-                })
-
-            }else if(selectedIconType == 1){
-
-                iMyService.getRestaurantBySearchBar(et_searchBar.text.toString(), UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
-                    }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        val result = response.body()?.string()
-                        val jsonArray = JSONArray(result)
-                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
-
-                        for (i in 0.until(jsonArray.length())){
-                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                            val _id = jsonObject.getString("_id")
-                            val storeType = jsonObject.getString("type")
-                            val title = jsonObject.getString("title")
-                            val grade = jsonObject.getDouble("avrGrade")
-                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                            var onSale = true
-                            if (jsonObject.getJSONArray("menuidList").length() == 0){
-                                onSale = false
-                            }
-                            val favoriteCount = jsonObject.getInt("favoriteCount")
-                            val description = jsonObject.getString("description")
-                            val address = jsonObject.getString("address")
-                            val phone = jsonObject.getString("phone")
-
-                            var originMenuList =  arrayListOf<OriginMenuModel>()
-                            val originMenuJson = jsonObject.getJSONArray("originMenuList")
-                            for(i in 0.until(originMenuJson.length())){
-                                val originMenu: JSONObject = originMenuJson.getJSONObject(i)
-                                val originMenuTitle = originMenu.getString("title")
-                                val originMenuPrice = originMenu.getInt("originPrice")
-                                originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
-                            }
-
-                            val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
-                            val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
-
-                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeType, title, grade,
-                                distance, onSale, favoriteCount, description, address, phone, originMenuList,
-                                lng as Double, lat as Double))
-                        }
-                        val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
-                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
-                        startActivity(intent)
-                    }
-                })
-            }
+        tv_searchBar.setOnClickListener{
+            val intent = Intent(this@MainActivity, SearchBarActivity::class.java)
+            intent.putExtra("selectedIconType", selectedIconType)
+            startActivity(intent)
         }
+
         //Advertisement
         viewpager = findViewById(R.id.main_ad_viewpager) as ViewPager
         val adapter = ViewPagerAdapter(this)
@@ -360,5 +288,17 @@ class MainActivity : AppCompatActivity(){
             currentLatLng = locationManager?.getLastKnownLocation(locationProvider)
         }
         return currentLatLng!!
+    }
+
+    @Override
+    override fun onBackPressed(){
+        val curTime: Long = System.currentTimeMillis()
+        val gapTime: Long = curTime - backBtnTime
+        if (0 <= gapTime && 2000 >= gapTime){
+            super.onBackPressed()
+        }else{
+            backBtnTime = curTime
+            Toast.makeText(this, "한번 더 누르면 종료됩니다", Toast.LENGTH_SHORT).show()
+        }
     }
 }

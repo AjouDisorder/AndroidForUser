@@ -113,26 +113,26 @@
                     android:numColumns="4"
                     app:layout_constraintTop_toBottomOf="@+id/discount_button" />
 
-                <EditText
-                    android:id="@+id/et_searchBar"
-                    android:layout_width="175dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="5dp"
-                    android:ems="10"
-                    android:hint="메뉴 검색"
-                    android:privateImeOptions="defaultInputmode=korean"
-                    app:layout_constraintStart_toEndOf="@+id/restaurant_button"
-                    app:layout_constraintTop_toTopOf="@+id/restaurant_button" />
-
                 <ImageView
-                    android:id="@+id/iv_searchBtn"
                     android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_height="35dp"
                     android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="18dp"
                     android:src="@drawable/logo_search"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/et_searchBar" />
+                    app:layout_constraintBottom_toTopOf="@+id/main_gridview"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_searchBar"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/border_bottom"
+                    android:hint="메뉴 검색"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/restaurant_button"
+                    app:layout_constraintStart_toEndOf="@+id/restaurant_button" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

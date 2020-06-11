@@ -9,13 +9,17 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".GetMenuByTimeActivity"></activity>
+        <activity android:name=".BottomTab.Coupon.CreateReviewActivity"></activity>
+        <activity android:name=".SearchBarActivity" />
+        <activity android:name=".GetMenuByTimeActivity" />
         <activity android:name=".SetAddressActivity" />
         <activity android:name=".CreateTicketActivity" />
         <activity android:name=".SearchedRestaurantListActivity" />

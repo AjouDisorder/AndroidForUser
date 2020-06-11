@@ -43,7 +43,7 @@ interface IMyService{
                                   @Query("lat") lat:Double?,
                                   @Query("lng") lng:Double?): Call<ResponseBody>
 
-    @GET("getMenuBySearchBar")
+    @GET("/user/getMenuBySearchBar")
     fun getMenuBySearchBar(  @Query("title") menuTitle:String,
                              @Query("lat") lat:Double?,
                              @Query("lng") lng:Double?): Call<ResponseBody>
@@ -76,5 +76,18 @@ interface IMyService{
 
     @GET("/user/getTicketList")
     fun getTicketList(@Query("user_id") user_id : String): Call<ResponseBody>
+
+    //Review Services
+    @FormUrlEncoded
+    @POST("/user/createReview")
+    fun createReview(@Field("ticket_id") ticket_id: String,
+                     @Field("grade") grade: Float,
+                     @Field("description") description: Editable,
+                     @Field("user_id") user_id: String?
+    ): Call<ResponseBody>
+    @GET("/user/getReviewList")
+    fun getReviewList(@Query("restaurant_id") restaurant_id : String): Call<ResponseBody>
+    @GET("/user/getReviewedTicketList")
+    fun getReviewedTicketList(@Query("user_id") user_id : String?): Call<ResponseBody>
 
 }
