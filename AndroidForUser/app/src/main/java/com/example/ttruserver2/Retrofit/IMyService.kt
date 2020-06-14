@@ -85,8 +85,18 @@ interface IMyService{
                      @Field("description") description: Editable,
                      @Field("user_id") user_id: String?
     ): Call<ResponseBody>
+    @FormUrlEncoded
+    @POST("/user/updateReview")
+    fun updateReview(@Field("review_id") review_id: String,
+                     @Field("description") description: Editable
+    ): Call<ResponseBody>
+    @FormUrlEncoded
+    @POST("/user/deleteReview")
+    fun deleteReview(@Field("review_id") review_id: String
+    ): Call<ResponseBody>
+
     @GET("/user/getReviewList")
-    fun getReviewList(@Query("restaurant_id") restaurant_id : String): Call<ResponseBody>
+    fun getReviewList(@Query("restaurant_id") restaurant_id: String?): Call<ResponseBody>
     @GET("/user/getReviewedTicketList")
     fun getReviewedTicketList(@Query("user_id") user_id : String?): Call<ResponseBody>
 

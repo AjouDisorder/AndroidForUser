@@ -22,7 +22,7 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
         return SearchedRestaurantAdapter.CustomViewHolder(view).apply {
             itemView.setOnClickListener {
                 val curPos : Int = adapterPosition
-                val selectedRestaurant : SearchedRestaurantModel = restaurantList.get(curPos)
+                val selectedRestaurant : SearchedRestaurantModel = restaurantList[curPos]
                 val intent = Intent(parent.context, SearchedRestaurantDetailActivity::class.java)
                 intent.putExtra("selectedRestaurant", selectedRestaurant)
                 parent.context.startActivity(intent)
@@ -38,7 +38,7 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
         holder.restaurantPicture.setImageResource(restaurantTypeToIcons[restaurantList[position].type]!!)
         holder.restaurantType.text = restaurantList.get(position).type
         holder.restaurantTitle.text = restaurantList.get(position).title
-        holder.restaurantGrade.text = restaurantList.get(position).grade.toString()
+        holder.restaurantGrade.text = (Math.round(restaurantList.get(position).grade*10)/10.0).toString()
         holder.restaurantDistance.text = restaurantList.get(position).distance.toString()
         if (!restaurantList.get(position).onSale){    //False면 "할인중" 안보이게
             holder.restaurantOnSale.visibility = View.INVISIBLE

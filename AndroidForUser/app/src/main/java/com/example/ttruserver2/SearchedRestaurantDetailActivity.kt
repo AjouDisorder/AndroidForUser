@@ -25,7 +25,8 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
 
         //menu fragment init
         val fragmentMenu = MenuFragment()
-        var restaurantBundle = Bundle()
+        val fragmentReview = ReviewFragment()
+        val restaurantBundle = Bundle()
         restaurantBundle.putString("restaurantOid", selectedRestaurant.restaurantOid)
         restaurantBundle.putDouble("restaurantDistance", selectedRestaurant.distance)
         restaurantBundle.putParcelableArrayList("originMenuList", selectedRestaurant.originMenuList)
@@ -38,8 +39,8 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
         var infoBundle = Bundle()
         infoBundle.putString("description", selectedRestaurant.description)
         infoBundle.putString("address", selectedRestaurant.address)
-        tv_rating.text = (selectedRestaurant.grade).toString();
-        ratingBar.rating = selectedRestaurant.grade.toFloat()
+        tv_rating.text = (Math.round(selectedRestaurant.grade*10)/10.0).toString();
+        ratingBar.rating = (Math.round(selectedRestaurant.grade*10)/10.0).toFloat()
         tv_favoriteCount.text = (selectedRestaurant.favoriteCount).toString();
         var favoriteCount = selectedRestaurant.favoriteCount
         tv_distance.text = (selectedRestaurant.distance).toString()
@@ -87,11 +88,10 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 }
 
                 val transaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-                //val fragmentMenu = MenuFragment()
                 fragmentMenu.arguments = restaurantBundle
                 transaction.replace(R.id.fl_detailMenu, fragmentMenu)
                 transaction.commit();
-                return false;
+                return false
             }
         })
         btn_detailMenu_info.setOnTouchListener(object : View.OnTouchListener{
@@ -112,7 +112,7 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 fragmentInfo.arguments = infoBundle
                 transaction.replace(R.id.fl_detailMenu, fragmentInfo)
                 transaction.commit();
-                return false;
+                return false
             }
         })
         btn_detailMenu_review.setOnTouchListener(object : View.OnTouchListener{
@@ -128,11 +128,12 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                     }
                 }
 
+
                 val transaction : FragmentTransaction = supportFragmentManager.beginTransaction()
-                val fragmentReview = ReviewFragment()
+                fragmentReview.arguments = restaurantBundle
                 transaction.replace(R.id.fl_detailMenu, fragmentReview)
-                transaction.commit();
-                return false;
+                transaction.commit()
+                return false
             }
         })
     }

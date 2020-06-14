@@ -120,24 +120,28 @@ class BottomCouponInfoActivity : AppCompatActivity() {
         }
 
         //review btn disable
-        btn_gotoReview.isEnabled = selectedTicket.available == false
-        iMyService.getReviewedTicketList(UserData.getOid()).enqueue(object : Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(this@BottomCouponInfoActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
-            }
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                val result = response.body()?.string()
-                val jsonArray = JSONArray(result)
-                for (i in 0.until(jsonArray.length())){
-                    val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-                    if (selectedTicket.ticket_id == jsonObject.getString("_id")){
-                        btn_gotoReview.isEnabled = false
-                        break
-                    }
-                    btn_gotoReview.isEnabled = true
+        if (selectedTicket.available == false){ //사장님 인증 이후
+            btn_gotoReview.isEnabled = true
+            iMyService.getReviewedTicketList(UserData.getOid()).enqueue(object : Callback<ResponseBody> {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@BottomCouponInfoActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                 }
-            }
-        })
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    val result = response.body()?.string()
+                    val jsonArray = JSONArray(result)
+                    for (i in 0.until(jsonArray.length())){
+                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                        if (selectedTicket.ticket_id == jsonObject.getString("_id")){
+                            btn_gotoReview.isEnabled = false
+                            break
+                        }
+                    }
+                }
+            })
+        }else{
+            btn_gotoReview.isEnabled = false
+        }
+
         //create review
         btn_gotoReview.setOnClickListener {
             val intent = Intent(this, CreateReviewActivity::class.java)
