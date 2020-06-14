@@ -62,11 +62,10 @@ class MenuFragment : Fragment() {
 
                     searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
                         restaurantDistance as Double, quantity, discount, discountedPrice, originPrice, method))
-
-                    view.rv_menuListOnDetail.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                    view.rv_menuListOnDetail.setHasFixedSize(true)
-                    view.rv_menuListOnDetail.adapter = SearchedMenuAdapter(searchedMenuModelList)
                 }
+                view.rv_menuListOnDetail.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                view.rv_menuListOnDetail.setHasFixedSize(true)
+                view.rv_menuListOnDetail.adapter = SearchedMenuAdapter(searchedMenuModelList)
             }
         })
         view.rv_originMenuListOnDetail.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

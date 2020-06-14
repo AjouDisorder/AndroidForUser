@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/border_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/et_reviewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
+            android:ems="10"
+            android:hint="나의 솔직한 메뉴 평가는..."
+            android:inputType="none"
+            android:textSize="14sp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_userNameInReview" />
+
+        <TextView
+            android:id="@+id/tv_userNameInReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:text="사용자이름"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_menuNameInReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="메뉴이름"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toBottomOf="@+id/rb_gradeReview"
+            app:layout_constraintStart_toEndOf="@+id/rb_gradeReview"
+            app:layout_constraintTop_toTopOf="@+id/rb_gradeReview" />
+
+        <RatingBar
+            android:id="@+id/rb_gradeReview"
+            style="@style/Widget.AppCompat.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="70dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_userNameInReview"
+            app:layout_constraintStart_toEndOf="@+id/tv_userNameInReview"
+            app:layout_constraintTop_toTopOf="@+id/tv_userNameInReview" />
+
+        <TextView
+            android:id="@+id/tv_descriptionInReview"
+            android:bufferType="editable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="20dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_userNameInReview" />
+
+        <Button
+            android:id="@+id/btn_editReview"
+            android:layout_width="50dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/rounded_rectangle_solid"
+            android:text="글 수정"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_deleteReview"
+            app:layout_constraintEnd_toStartOf="@+id/btn_deleteReview" />
+
+        <Button
+            android:id="@+id/btn_deleteReview"
+            android:layout_width="50dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_rectangle_solid"
+            android:text="삭제"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tv_descriptionInReview"
+            app:layout_constraintTop_toBottomOf="@+id/tv_descriptionInReview" />
+
+        <Button
+            android:id="@+id/btn_editComplete"
+            android:layout_width="50dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_rectangle_solid"
+            android:text="완료"
+            android:textSize="10sp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="@+id/tv_descriptionInReview"
+            app:layout_constraintTop_toBottomOf="@+id/et_reviewDescription" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
