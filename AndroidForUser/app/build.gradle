@@ -58,4 +58,7 @@ dependencies {
 
     //qr code library zxing
     implementation 'com.journeyapps:zxing-android-embedded:3.6.0'
+
+    // bootpay
+    implementation 'com.github.bootpay:client_android_java:3.2.47'
 }
