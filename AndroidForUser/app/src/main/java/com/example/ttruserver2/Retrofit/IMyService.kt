@@ -10,13 +10,22 @@ interface IMyService{
     @POST("user/signup")
     fun signUpUser(@Field("userId") userId: String,
                    @Field("password") password: String,
-                   @Field("name") nickname: String
+                   @Field("name") nickname: String,
+                   @Field("sex") sex: String,
+                   @Field("dateOfBirth") dateOfBirth: String,
+                   @Field("phone") phone: String
     ): Call<ResponseBody>
-
     @FormUrlEncoded
     @POST("user/login")
     fun loginUser(@Field("userId") email: String,
                   @Field("password") password: String): Call<ResponseBody>
+    @FormUrlEncoded
+    @POST("user/updateInfo")
+    fun updateInfo(@Field("user_id") user_id: String?,
+                   @Field("password") password: String,
+                   @Field("name") name: String,
+                   @Field("sex") sex: String,
+                   @Field("phone") phone: String): Call<ResponseBody>
 
     //Search Services
     @GET("/user/getMenuListOfRestaurant")

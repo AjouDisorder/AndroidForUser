@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.example.ttruserver2.BottomTab.UserInfo.BottomMyInfoActivity
 import com.example.ttruserver2.BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity
 import com.example.ttruserver2.LogInActivity
 import com.example.ttruserver2.MainActivity
@@ -120,10 +121,11 @@ class BottomCouponActivity : AppCompatActivity() {
             if(UserData.getOid() == null){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
-            }/* else {
+            } else {
                 val intent = Intent(this, BottomMyInfoActivity::class.java)
                 startActivity(intent)
-            }*/
+                finish()
+            }
         }
     }
 }
