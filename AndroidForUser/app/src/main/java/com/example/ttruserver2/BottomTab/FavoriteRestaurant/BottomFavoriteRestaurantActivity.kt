@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.example.ttruserver2.BottomTab.BottomMyInfoActivity
 import com.example.ttruserver2.BottomTab.Coupon.BottomCouponActivity
 import com.example.ttruserver2.LogInActivity
 import com.example.ttruserver2.MainActivity

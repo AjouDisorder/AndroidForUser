@@ -18,7 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager.widget.ViewPager
 import com.example.ttruserver.ViewPagerAdapter
-import com.example.ttruserver2.BottomTab.BottomMyInfoActivity
+import com.example.ttruserver2.BottomTab.UserInfo.BottomMyInfoActivity
 import com.example.ttruserver2.BottomTab.Coupon.BottomCouponActivity
 import com.example.ttruserver2.BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity
 import com.example.ttruserver2.Retrofit.IMyService
@@ -138,10 +138,11 @@ class MainActivity : AppCompatActivity(){
             if(UserData.getOid() == null){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
-            }/* else {
+            } else {
                 val intent = Intent(this, BottomMyInfoActivity::class.java)
                 startActivity(intent)
-            }*/
+                finish()
+            }
         }
 
         //findByCategory

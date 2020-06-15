@@ -12,6 +12,9 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -21,7 +24,6 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
 
-        // Init API
         val retrofit = RetrofitClient.getInstance()
         iMyService = retrofit.create(IMyService::class.java)
 
@@ -29,18 +31,30 @@ class SignUpActivity : AppCompatActivity() {
             val userId = signup_email_area.text.toString()
             val password = signup_password_area.text.toString()
             val name = signup_name_area.text.toString()
+            val dateOfBirth = signup_dateOfBirth_area.text.toString()
+            val phone = signup_phone_area.text.toString()
+            var sex = ""
+            if (rb_male.isChecked){
+                sex = "남성"
+            }else if(rb_female.isChecked){
+                sex = "여성"
+            }
 
             //Check empty
-            if(TextUtils.isEmpty(userId)){
-                Toast.makeText(this,"Email을 입력하세요", Toast.LENGTH_SHORT).show()
-            }
-            if(TextUtils.isEmpty(password)){
-                Toast.makeText(this,"Password를 입력하세요", Toast.LENGTH_SHORT).show()
-            }
-            if(TextUtils.isEmpty(name)){
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(userId).matches()){
+                Toast.makeText(this,"올바르지 않은 Email 형식입니다", Toast.LENGTH_SHORT).show()
+            } else if(password.length < 6){
+                Toast.makeText(this,"6글자 이상 Password를 입력하세요", Toast.LENGTH_SHORT).show()
+            } else if(TextUtils.isEmpty(name)){
                 Toast.makeText(this,"이름을 입력하세요", Toast.LENGTH_SHORT).show()
-            }else{
-                iMyService.signUpUser(userId, password, name).enqueue(object : Callback<ResponseBody> {
+            } else if(sex == ""){
+                Toast.makeText(this,"성별을 선택하세요", Toast.LENGTH_SHORT).show()
+            }  else if(!validationDate(dateOfBirth)){
+                Toast.makeText(this,"잘못 된 생년월일 입니다.", Toast.LENGTH_SHORT).show()
+            } else if(!Pattern.matches("^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$", phone)){
+                Toast.makeText(this,"올바르지 않은 휴대폰번호 형식입니다", Toast.LENGTH_SHORT).show()
+            } else{
+                iMyService.signUpUser(userId, password, name, sex, dateOfBirth, phone).enqueue(object : Callback<ResponseBody> {
                     override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
                         Toast.makeText(this@SignUpActivity, "$t", Toast.LENGTH_LONG).show()
                     }
@@ -51,12 +65,22 @@ class SignUpActivity : AppCompatActivity() {
                         if(result == "userId is duplicated!"){
                             Toast.makeText(this@SignUpActivity, "중복된 아이디 입니다", Toast.LENGTH_SHORT).show()
                         }else{
-                            Toast.makeText(this@SignUpActivity, "$result", Toast.LENGTH_SHORT).show()
                             finish()
                         }
                     }
                 })
             }
+        }
+    }
+
+    fun validationDate(checkDate : String): Boolean {
+        return try{
+            val dateFormat = SimpleDateFormat("yyyyMMdd")
+            dateFormat.setLenient(false)
+            dateFormat.parse(checkDate)
+            true
+        }catch (e : ParseException){
+            false
         }
     }
 }

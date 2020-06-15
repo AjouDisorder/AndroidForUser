@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".BottomTab.Coupon.CreateReviewActivity"></activity>
+        <activity android:name=".BottomTab.UserInfo.UpdateInfoActivity"></activity>
+        <activity android:name=".BottomTab.Coupon.CreateReviewActivity" />
         <activity android:name=".SearchBarActivity" />
         <activity android:name=".GetMenuByTimeActivity" />
         <activity android:name=".SetAddressActivity" />
@@ -30,7 +31,7 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".Fragment.RestaurantInfo.RestaurantInfoActivity" />
         <activity android:name=".GridInfoActivity" />
-        <activity android:name=".BottomTab.BottomMyInfoActivity" />
+        <activity android:name=".BottomTab.UserInfo.BottomMyInfoActivity" />
         <activity android:name=".BottomTab.Coupon.BottomCouponActivity" />
         <activity android:name=".BottomTab.Coupon.BottomCouponInfoActivity" />
         <activity android:name=".ConfirmLoginActivity" />

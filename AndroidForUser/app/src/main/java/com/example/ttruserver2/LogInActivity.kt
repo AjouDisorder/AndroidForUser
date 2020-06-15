@@ -74,7 +74,11 @@ class LogInActivity : AppCompatActivity() {
                     }else{
                         UserData.setOid(jsonObject.getString("_id"))
                         UserData.setUid(jsonObject.getString("userId"))
+                        UserData.setPassword(jsonObject.getString("password"))
                         UserData.setName(jsonObject.getString("name"))
+                        UserData.setSex(jsonObject.getString("sex"))
+                        UserData.setDateOfBirth(jsonObject.getString("dateOfBirth"))
+                        UserData.setPhone(jsonObject.getString("phone"))
                         finish()
                     }
                 }
