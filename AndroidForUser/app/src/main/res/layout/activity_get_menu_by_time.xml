@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="660dp"
+    android:layout_height="match_parent"
     tools:context=".Fragment.FirstFragment">
 
     <!--    <TextView-->
@@ -20,7 +20,7 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime"
+        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime2"
         app:srcCompat="@drawable/logo_emptybox" />
 
     <TextView
@@ -43,7 +43,7 @@
         android:layout_marginEnd="44dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime"
+        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime2"
         app:srcCompat="@drawable/logo_teardrop" />
 
     <LinearLayout
@@ -76,12 +76,17 @@
             android:layout_marginRight="10dp"
             android:src="@drawable/logo_refresh" />
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_getMenuByTime"
+    <LinearLayout
+        android:id="@+id/rv_getMenuByTime2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date_time_setting" />
-
+        app:layout_constraintTop_toBottomOf="@+id/date_time_setting">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_getMenuByTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_time_setting" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,7 +54,7 @@ class ReviewFragment : Fragment() {
                         val grade = jsonObject.getDouble("grade")
                         val description = jsonObject.getString("description")
 
-                        reviewList.add(ReviewModel(_id, ticket_id, userName, menuName, grade, description))
+                        reviewList.add(0, ReviewModel(_id, ticket_id, userName, menuName, grade, description))
 
                     }
                     view.rv_reviewList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
