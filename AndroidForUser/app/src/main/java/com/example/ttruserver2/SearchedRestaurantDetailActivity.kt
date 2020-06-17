@@ -1,6 +1,7 @@
 package com.example.ttruserver2;
 
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -136,5 +137,16 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 return false
             }
         })
+        button.setOnClickListener {
+            val location = Uri.parse("kakaomap://route?sp="+UserData.getLat()+","+UserData.getLng()+"&ep="+selectedRestaurant.lat+","+selectedRestaurant.lng+"&by=FOOT")
+            val mapIntent = Intent(Intent.ACTION_VIEW, location)
+
+            val activities: List<ResolveInfo> = packageManager.queryIntentActivities(mapIntent, 0)
+            val isIntentSafe: Boolean = activities.isNotEmpty()
+
+            if (isIntentSafe) {
+                startActivity(mapIntent)
+            }
+        }
     }
 }
