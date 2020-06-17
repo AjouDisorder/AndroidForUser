@@ -109,4 +109,18 @@ interface IMyService{
     @GET("/user/getReviewedTicketList")
     fun getReviewedTicketList(@Query("user_id") user_id : String?): Call<ResponseBody>
 
+    //Favorite Services
+    @FormUrlEncoded
+    @POST("/user/addRestaurantToFavoriteList")
+    fun addRestaurantToFavoriteList(@Field("user_id") user_id: String?,
+                                    @Field("restaurant_id") restaurant_id: String?
+    ): Call<ResponseBody>
+    @FormUrlEncoded
+    @POST("/user/deleteRestaurantInFavoriteList")
+    fun deleteRestaurantInFavoriteList(
+                    @Field("user_id") user_id: String?,
+                    @Field("restaurant_id") restaurant_id: String?
+    ): Call<ResponseBody>
+    @GET("/user/getFavoriteList")
+    fun getFavoriteList(@Query("user_id") user_id: String?): Call<ResponseBody>
 }

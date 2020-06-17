@@ -71,15 +71,15 @@ class MainActivity : AppCompatActivity(){
             val intent = Intent(this@MainActivity, SetAddressActivity::class.java)
             startActivity(intent)
         }
-        /*if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
             UserData.setLng(127.046532)
             UserData.setLat(37.283602)
-        }*/
-        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+        }
+        /*if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
             getLastLocation()
         }else{
             Locationtxt.text = UserData.getAddress()
-        }
+        }*/
 
         val menuIcons = arrayOf( R.drawable.menu_time, R.drawable.menu_chickenpizza, R.drawable.menu_jokbal,
             R.drawable.menu_japan, R.drawable.menu_nation, R.drawable.menu_hambur, R.drawable.menu_rice,
