@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
+import com.example.ttruserver2.models.SearchedRestaurantModel
 import kotlinx.android.synthetic.main.activity_log_in.*
 import kotlinx.android.synthetic.main.activity_sign_up.*
 import kotlinx.android.synthetic.main.main_menu_header.*
@@ -79,6 +80,12 @@ class LogInActivity : AppCompatActivity() {
                         UserData.setSex(jsonObject.getString("sex"))
                         UserData.setDateOfBirth(jsonObject.getString("dateOfBirth"))
                         UserData.setPhone(jsonObject.getString("phone"))
+                        if (intent.hasExtra("fromRestaurantDetail")){
+                            val selectedRestaurant = intent.getSerializableExtra("fromRestaurantDetail") as SearchedRestaurantModel
+                            val intent = Intent(this@LogInActivity, SearchedRestaurantDetailActivity::class.java)
+                            intent.putExtra("selectedRestaurant", selectedRestaurant)
+                            startActivity(intent)
+                        }
                         finish()
                     }
                 }

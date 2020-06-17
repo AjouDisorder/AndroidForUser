@@ -5,11 +5,14 @@ import android.content.pm.ResolveInfo
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.graphics.Color;
+import android.graphics.Color
 import android.net.Uri
-import android.os.Bundle;
-import android.view.MotionEvent;
-import android.view.View;
+import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
+import android.widget.Toast
+import com.example.ttruserver2.Retrofit.IMyService
+import com.example.ttruserver2.Retrofit.RetrofitClient
 import com.example.ttruserver2.detailRestaurant.InfoFragment
 import com.example.ttruserver2.detailRestaurant.MenuFragment
 import com.example.ttruserver2.detailRestaurant.ReviewFragment
@@ -17,11 +20,22 @@ import com.example.ttruserver2.models.SearchedRestaurantModel
 import com.google.firebase.messaging.FirebaseMessaging
 
 import kotlinx.android.synthetic.main.activity_searched_restaurant_detail.*
+import okhttp3.ResponseBody
+import org.json.JSONArray
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SearchedRestaurantDetailActivity : AppCompatActivity() {
+
+    lateinit var iMyService: IMyService
     override fun onCreate(savedInstanceState : Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searched_restaurant_detail)
+
+        val retrofit = RetrofitClient.getInstance()
+        iMyService = retrofit.create(IMyService::class.java)
 
         val selectedRestaurant = intent.getSerializableExtra("selectedRestaurant") as SearchedRestaurantModel
 
@@ -43,8 +57,20 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
         infoBundle.putString("address", selectedRestaurant.address)
         tv_rating.text = (Math.round(selectedRestaurant.grade*10)/10.0).toString();
         ratingBar.rating = (Math.round(selectedRestaurant.grade*10)/10.0).toFloat()
-        tv_favoriteCount.text = (selectedRestaurant.favoriteCount).toString();
+
         var favoriteCount = selectedRestaurant.favoriteCount
+        iMyService.getRestaurantDetail(selectedRestaurant.restaurantOid).enqueue(object : Callback<ResponseBody> {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(this@SearchedRestaurantDetailActivity, "Fail : $t", Toast.LENGTH_SHORT).show() }
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                val result = response.body()?.string()
+                val jsonObject = JSONObject(result)
+
+                favoriteCount = jsonObject.getInt("favoriteCount")
+                tv_favoriteCount.text = favoriteCount.toString()
+            }
+        })
+
         tv_distance.text = (selectedRestaurant.distance).toString()
         btn_dial.setOnClickListener{
             var intent = Intent(Intent.ACTION_DIAL)
@@ -53,28 +79,65 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        //todo 즐겨찾기 추가 되어있는지
-        var isFavorite : Boolean = false
-        if (isFavorite){
-            iv_isFavorite.setImageResource(R.drawable.fillheart)
-        }else{
-            iv_isFavorite.setImageResource(R.drawable.emptyheart)
-        }
-        //todo 즐겨찾기 버튼
-        btn_setFavorite.setOnClickListener{
-            if (isFavorite){    //즐겨찾기 해제
-                isFavorite = false
-                favoriteCount -= 1
-                tv_favoriteCount.text = favoriteCount.toString()
-                iv_isFavorite.setImageResource(R.drawable.emptyheart)
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(selectedRestaurant.restaurantOid);
 
-            }else{  //즐겨찾기 추가
-                isFavorite = true
-                favoriteCount += 1
-                tv_favoriteCount.text = favoriteCount.toString()
-                iv_isFavorite.setImageResource(R.drawable.fillheart)
-                FirebaseMessaging.getInstance().subscribeToTopic(selectedRestaurant.restaurantOid);
+        //Favorite Services
+        var isFavorite : Boolean = false
+        iv_isFavorite.setImageResource(R.drawable.emptyheart)
+        if (UserData.getOid() != null){
+            iMyService.getFavoriteList(UserData.getOid()).enqueue(object : Callback<ResponseBody> {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@SearchedRestaurantDetailActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                }
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    val result = response.body()?.string()
+                    val jsonArray = JSONArray(result)
+
+                    for (i in 0.until(jsonArray.length())){
+                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                        if(selectedRestaurant.restaurantOid == jsonObject.getString("_id")){
+                            isFavorite = true
+                            iv_isFavorite.setImageResource(R.drawable.fillheart)
+                            break
+                        }
+                    }
+                }
+            })
+        }
+        //favorite btn
+        btn_setFavorite.setOnClickListener{
+            if (UserData.getOid() == null){
+                intent = Intent(this, LogInActivity::class.java)
+                intent.putExtra("fromRestaurantDetail", selectedRestaurant)
+                startActivity(intent)
+                finish()
+            }else{
+                if (isFavorite){    //즐겨찾기 해제
+                    iMyService.deleteRestaurantInFavoriteList(UserData.getOid(), selectedRestaurant.restaurantOid).enqueue(object : Callback<ResponseBody> {
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@SearchedRestaurantDetailActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                        }
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            isFavorite = false
+                            favoriteCount -= 1
+                            tv_favoriteCount.text = favoriteCount.toString()
+                            iv_isFavorite.setImageResource(R.drawable.emptyheart)
+                            FirebaseMessaging.getInstance().unsubscribeFromTopic(selectedRestaurant.restaurantOid)
+                        }
+                    })
+                }else{  //즐겨찾기 추가
+                    isFavorite = true
+                    iMyService.addRestaurantToFavoriteList(UserData.getOid(), selectedRestaurant.restaurantOid).enqueue(object : Callback<ResponseBody> {
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@SearchedRestaurantDetailActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                        }
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            favoriteCount += 1
+                            tv_favoriteCount.text = favoriteCount.toString()
+                            iv_isFavorite.setImageResource(R.drawable.fillheart)
+                            FirebaseMessaging.getInstance().subscribeToTopic(selectedRestaurant.restaurantOid);
+                        }
+                    })
+                }
             }
         }
 
