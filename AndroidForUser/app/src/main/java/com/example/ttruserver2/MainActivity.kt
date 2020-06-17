@@ -2,6 +2,7 @@ package com.example.ttruserver2
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,8 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -26,6 +29,7 @@ import com.example.ttruserver2.Retrofit.RetrofitClient
 import com.example.ttruserver2.models.OriginMenuModel
 import com.example.ttruserver2.models.SearchedMenuModel
 import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.bottom.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -47,16 +51,17 @@ class MainActivity : AppCompatActivity(){
     lateinit var iMyService: IMyService
     private var backBtnTime: Long = 0
 
-    var locationManager : LocationManager? = null
-    private val REQUEST_CODE_LOCATION : Int = 2
-    var address : String = ""
+    val PERMISSION_ID = 42
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
     var latitude : Double? = null
     var longitude : Double? = null
+    var currentLocation : String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         //retrofit
         val retrofit = RetrofitClient.getInstance()
@@ -66,18 +71,14 @@ class MainActivity : AppCompatActivity(){
             val intent = Intent(this@MainActivity, SetAddressActivity::class.java)
             startActivity(intent)
         }
-        /*
-        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
-            getCurrentLoc()
-            Locationtxt.text = address
-            UserData.setLng(longitude as Double)
-            UserData.setLat(latitude as Double)
-        }else{
-            Locationtxt.text = UserData.getAddress()
-        }*/
-        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+        /*if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
             UserData.setLng(127.046532)
             UserData.setLat(37.283602)
+        }*/
+        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+            getLastLocation()
+        }else{
+            Locationtxt.text = UserData.getAddress()
         }
 
         val menuIcons = arrayOf( R.drawable.menu_time, R.drawable.menu_chickenpizza, R.drawable.menu_jokbal,
@@ -251,55 +252,100 @@ class MainActivity : AppCompatActivity(){
     }
 
 
-    private fun getCurrentLoc(){
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-        val userLocation: Location = getLatLng()
-        if(userLocation != null){
-            latitude = userLocation.latitude
-            longitude = userLocation.longitude
-            Log.d("check current location", "현재 내 위치값 : $latitude, $longitude")
-            //Locationtxt.text = "Your Current Coordinates are : \nLat:" + latitude + " ; Long:" + longitude
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
 
-            val mGeocoder = Geocoder(applicationContext, Locale.KOREAN)
-            var mResultList : List<Address>? = null
+                mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
+                    var location: Location? = task.result
+                    val mGeocoder = Geocoder(applicationContext, Locale.KOREAN)
+                    var mResultList : List<Address>? = null
 
-            try {
-                mResultList = mGeocoder.getFromLocation(
-                    latitude!!, longitude!!, 1
-                )
-            }catch (e: IOException){
-                e.printStackTrace()
+                    if (location == null) {
+                        requestNewLocationData()
+                    } else {
+                        latitude = location.latitude
+                        longitude = location.longitude
+                        mResultList = mGeocoder.getFromLocation(
+                            latitude!!, longitude!!, 1
+                        )
+                        currentLocation = mResultList[0].getAddressLine(0)
+                        currentLocation = currentLocation.substring(5)
+                        UserData.setLng(longitude as Double)
+                        UserData.setLat(latitude as Double)
+                        UserData.setAddress(currentLocation as String)
+                        Locationtxt.text = currentLocation
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
             }
-            if(mResultList != null){
-                Log.d("check current location", mResultList[0].getAddressLine(0))
-                address = mResultList[0].getAddressLine(0)
-                address = address.substring(5)
-                //Addersstxt.text = "Your Current Address is : \n" + currentLocation
-            }
+        } else {
+            requestPermissions()
         }
     }
-    private fun getLatLng() : Location {
-        var currentLatLng: Location? = null
-        if(ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), this.REQUEST_CODE_LOCATION)
-            getLatLng()
-        }else{
-            val locationProvider = LocationManager.GPS_PROVIDER
-            currentLatLng = locationManager?.getLastKnownLocation(locationProvider)
-        }
-        return currentLatLng!!
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+        var mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 0
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationClient!!.requestLocationUpdates(
+            mLocationRequest, mLocationCallback,
+            Looper.myLooper()
+        )
     }
 
-    @Override
-    override fun onBackPressed(){
-        val curTime: Long = System.currentTimeMillis()
-        val gapTime: Long = curTime - backBtnTime
-        if (0 <= gapTime && 2000 >= gapTime){
-            super.onBackPressed()
-        }else{
-            backBtnTime = curTime
-            Toast.makeText(this, "한번 더 누르면 종료됩니다", Toast.LENGTH_SHORT).show()
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            var mLastLocation: Location = locationResult.lastLocation
+            UserData.setLng(mLastLocation.longitude)
+            UserData.setLat(mLastLocation.latitude)
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        var locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_ID
+        )
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == PERMISSION_ID) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                getLastLocation()
+            }
         }
     }
 }
