@@ -20,7 +20,7 @@
         android:id="@+id/imageView9"
         android:layout_width="30dp"
         android:layout_height="35dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="@+id/imageView12"
         app:layout_constraintTop_toBottomOf="@+id/imageView12"
         app:srcCompat="@drawable/store_map" />
@@ -31,9 +31,10 @@
         android:layout_height="32dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="할인율"
         android:textAlignment="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="@+id/searched_menu_disP"
         app:layout_constraintTop_toBottomOf="@+id/searched_menu_disP" />
 
@@ -42,6 +43,7 @@
         android:layout_width="67dp"
         android:layout_height="25dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="4900"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -53,6 +55,7 @@
         android:layout_width="67dp"
         android:layout_height="25dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="17"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -83,6 +86,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="5600"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -97,7 +101,7 @@
         android:text="Macdonald"
         android:textAlignment="center"
         android:textColor="#000000"
-        android:textSize="40sp"
+        android:textSize="30sp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
@@ -119,9 +123,10 @@
         android:layout_marginStart="37dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="원가"
         android:textAlignment="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_titleInMenu" />
@@ -143,9 +148,10 @@
         android:layout_marginStart="37dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/round_border"
+        android:gravity="center"
         android:text="특가"
         android:textAlignment="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searched_menu_originP" />
 
@@ -172,7 +178,7 @@
     <TextView
         android:id="@+id/tv_titleInMenu"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="11dp"
         android:layout_marginBottom="10dp"
         android:text="Bigmac"
