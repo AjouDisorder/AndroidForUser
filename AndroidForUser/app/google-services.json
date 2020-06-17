@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "5150194836",
+    "firebase_url": "https://realmeal-14210.firebaseio.com",
+    "project_id": "realmeal-14210",
+    "storage_bucket": "realmeal-14210.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5150194836:android:c7bb4c171a1fc044aec881",
+        "android_client_info": {
+          "package_name": "com.example.ttruserver2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5150194836-n93lkubo1ba3evth534auusjve4280ah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ttruserver2",
+            "certificate_hash": "f2ae5701cf2b8f4f908ad75ad85e1ef899a6e098"
+          }
+        },
+        {
+          "client_id": "5150194836-dq09e8aaijtglja0knrqnd1quv921bq1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQCDc3GSPMhyoFSVKoSI4DkVKKOHh4iC0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5150194836-dq09e8aaijtglja0knrqnd1quv921bq1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

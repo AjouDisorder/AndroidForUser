@@ -1,6 +1,7 @@
 package com.example.ttruserver2;
 
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -13,6 +14,7 @@ import com.example.ttruserver2.detailRestaurant.InfoFragment
 import com.example.ttruserver2.detailRestaurant.MenuFragment
 import com.example.ttruserver2.detailRestaurant.ReviewFragment
 import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.firebase.messaging.FirebaseMessaging
 
 import kotlinx.android.synthetic.main.activity_searched_restaurant_detail.*
 
@@ -65,11 +67,14 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 favoriteCount -= 1
                 tv_favoriteCount.text = favoriteCount.toString()
                 iv_isFavorite.setImageResource(R.drawable.emptyheart)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(selectedRestaurant.restaurantOid);
+
             }else{  //즐겨찾기 추가
                 isFavorite = true
                 favoriteCount += 1
                 tv_favoriteCount.text = favoriteCount.toString()
                 iv_isFavorite.setImageResource(R.drawable.fillheart)
+                FirebaseMessaging.getInstance().subscribeToTopic(selectedRestaurant.restaurantOid);
             }
         }
 
@@ -136,5 +141,16 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 return false
             }
         })
+        button.setOnClickListener {
+            val location = Uri.parse("kakaomap://route?sp="+UserData.getLat()+","+UserData.getLng()+"&ep="+selectedRestaurant.lat+","+selectedRestaurant.lng+"&by=FOOT")
+            val mapIntent = Intent(Intent.ACTION_VIEW, location)
+
+            val activities: List<ResolveInfo> = packageManager.queryIntentActivities(mapIntent, 0)
+            val isIntentSafe: Boolean = activities.isNotEmpty()
+
+            if (isIntentSafe) {
+                startActivity(mapIntent)
+            }
+        }
     }
 }

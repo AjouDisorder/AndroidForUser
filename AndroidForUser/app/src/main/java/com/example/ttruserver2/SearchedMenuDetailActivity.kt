@@ -1,6 +1,8 @@
 package com.example.ttruserver2
 
 import android.content.Intent
+import android.content.pm.ResolveInfo
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -91,6 +93,31 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
                     val intent = Intent(this@SearchedMenuDetailActivity, SearchedRestaurantDetailActivity::class.java)
                     intent.putExtra("selectedRestaurant", selectedRestaurant)
                     this@SearchedMenuDetailActivity.startActivity(intent)
+                }
+            })
+        }
+        button2.setOnClickListener{
+            iMyService.getRestaurantDetail(selectedMenu.restaurantOid).enqueue(object : Callback<ResponseBody> {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(this@SearchedMenuDetailActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                }
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                    val result = response?.body()?.string()
+                    val jsonObject = JSONObject(result)
+
+                    val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                    val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+                    val location = Uri.parse("kakaomap://route?sp="+UserData.getLat()+","+UserData.getLng()+"&ep="+lat+","+lng+"&by=FOOT")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, location)
+
+                    val activities: List<ResolveInfo> = packageManager.queryIntentActivities(mapIntent, 0)
+                    val isIntentSafe: Boolean = activities.isNotEmpty()
+
+                    if (isIntentSafe) {
+                        startActivity(mapIntent)
+                    }
+
+
                 }
             })
         }
