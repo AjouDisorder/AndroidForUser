@@ -101,10 +101,11 @@
                 android:layout_marginStart="100dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/round_border"
+                android:gravity="center|center_horizontal"
                 android:text="즐겨찾기"
                 android:textAlignment="center"
                 android:textColor="#2E2A2A"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
@@ -136,7 +137,7 @@
                 android:text="가게 이름"
                 android:textAlignment="center"
                 android:textColor="#000000"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="86dp" />
 
