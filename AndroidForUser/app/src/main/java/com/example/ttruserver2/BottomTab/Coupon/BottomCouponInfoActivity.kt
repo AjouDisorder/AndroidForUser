@@ -1,8 +1,10 @@
 package com.example.ttruserver2.BottomTab.Coupon
 
 import android.content.Intent
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.location.Location
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -63,7 +65,15 @@ class BottomCouponInfoActivity : AppCompatActivity() {
         bottom_coupon_info_qrcode.setImageBitmap(bitmap)
 
         tv_mapInTicket.setOnClickListener {
-            //todo 지도 표시
+            val location = Uri.parse("kakaomap://route?sp="+UserData.getLat()+","+UserData.getLng()+"&ep="+selectedTicket.location_lat+","+selectedTicket.location_lng+"&by=FOOT")
+            val mapIntent = Intent(Intent.ACTION_VIEW, location)
+
+            val activities: List<ResolveInfo> = packageManager.queryIntentActivities(mapIntent, 0)
+            val isIntentSafe: Boolean = activities.isNotEmpty()
+
+            if (isIntentSafe) {
+                startActivity(mapIntent)
+            }
         }
         tv_gotoRestaurant.setOnClickListener {
             iMyService.getRestaurantDetail(selectedTicket.restaurant_id).enqueue(object : Callback<ResponseBody> {
