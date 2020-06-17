@@ -3,6 +3,7 @@ package com.example.ttruserver2.models
 import java.io.Serializable
 
 class SearchedMenuModel(
+    val token: String,
     val menuOid: String,
     val restaurantTitle : String,
     val restaurantOid: String,

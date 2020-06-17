@@ -137,10 +137,18 @@ class CreateTicketActivity : AppCompatActivity() {
                                         Toast.makeText(this@CreateTicketActivity, "메뉴 수량이 부족합니다", Toast.LENGTH_SHORT).show()
                                     }else{
                                         Toast.makeText(this@CreateTicketActivity, "구매가 완료되었습니다", Toast.LENGTH_SHORT).show()
-                                        val intent = Intent(this@CreateTicketActivity, MainActivity::class.java)
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        startActivity(intent)
+                                        iMyService.messageForBoss(selectedMenu.token, "메세지 : ${tv_messageForBoss.text}  \n" +
+                                                "${selectedMenu.restaurantTitle}의 ${selectedMenu.menuTitle} 메뉴").enqueue(object : Callback<ResponseBody>{
+                                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                                Toast.makeText(this@CreateTicketActivity, "$t", Toast.LENGTH_LONG).show()
+                                            }
+                                            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
+                                                val intent = Intent(this@CreateTicketActivity, MainActivity::class.java)
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                startActivity(intent)
+                                            }
+                                        })
                                     }
                                 }
                             })
