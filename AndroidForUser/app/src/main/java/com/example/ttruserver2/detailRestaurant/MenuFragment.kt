@@ -47,6 +47,7 @@ class MenuFragment : Fragment() {
                 for (i in 0.until(jsonArray.length())){
                     val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
+                    val token = jsonObject.getString("token")
                     val _id = jsonObject.getString("_id")
                     val restaurantTitle = jsonObject.getString("restaurantTitle")
                     val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
@@ -60,7 +61,7 @@ class MenuFragment : Fragment() {
                     val discountedPrice = originPrice - (originPrice * discount / 100)
                     val method = jsonObject.getString("method")
 
-                    searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
+                    searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
                         restaurantDistance as Double, quantity, discount, discountedPrice, originPrice, method))
                 }
                 view.rv_menuListOnDetail.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

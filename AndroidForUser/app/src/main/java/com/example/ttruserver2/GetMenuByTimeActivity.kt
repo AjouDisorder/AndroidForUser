@@ -85,6 +85,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                     for (i in 0.until(jsonArray.length())){
                         val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
+                        val token = jsonObject.getString("token")
                         val _id = jsonObject.getString("_id")
                         val restaurantTitle = jsonObject.getString("restaurantTitle")
                         val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
@@ -99,7 +100,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                         val discountedPrice = originPrice - (originPrice * discount / 100)
                         val method = jsonObject.getString("method")
 
-                        searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title,
+                        searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title,
                             startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
 
                         rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)
@@ -148,6 +149,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                         for (i in 0.until(jsonArray.length())){
                             val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
+                            val token = jsonObject.getString("token")
                             val _id = jsonObject.getString("_id")
                             val restaurantTitle = jsonObject.getString("restaurantTitle")
                             val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
@@ -162,7 +164,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                             val discountedPrice = originPrice - (originPrice * discount / 100)
                             val method = jsonObject.getString("method")
 
-                            searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, type, title,
+                            searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title,
                                 startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
                         }
                         rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)

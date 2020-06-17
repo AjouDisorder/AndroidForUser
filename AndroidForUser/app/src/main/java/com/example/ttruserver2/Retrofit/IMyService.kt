@@ -123,4 +123,13 @@ interface IMyService{
     ): Call<ResponseBody>
     @GET("/user/getFavoriteList")
     fun getFavoriteList(@Query("user_id") user_id: String?): Call<ResponseBody>
+
+    //push service
+    @FormUrlEncoded
+    @POST("sendPush1")
+    fun messageForBoss(
+        @Field("destToken") destToken: String?,
+        @Field("menu") menu: String?
+    ): Call<ResponseBody>
+
 }

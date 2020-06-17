@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity(){
                             for (i in 0.until(jsonArray.length())){
                                 val jsonObject: JSONObject = jsonArray.getJSONObject(i)
 
+                                val token = jsonObject.getString("token")
                                 val _id = jsonObject.getString("_id")
                                 val restaurantTitle = jsonObject.getString("restaurantTitle")
                                 val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity(){
                                 val discountedPrice = originPrice - (originPrice * discount / 100)
                                 val method = jsonObject.getString("method")
 
-                                searchedMenuModelList.add(SearchedMenuModel(_id, restaurantTitle, restaurantOid, menuTypes[position], title,
+                                searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, menuTypes[position], title,
                                     startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
                             }
                             val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
