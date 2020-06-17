@@ -14,6 +14,7 @@ import com.example.ttruserver2.detailRestaurant.InfoFragment
 import com.example.ttruserver2.detailRestaurant.MenuFragment
 import com.example.ttruserver2.detailRestaurant.ReviewFragment
 import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.firebase.messaging.FirebaseMessaging
 
 import kotlinx.android.synthetic.main.activity_searched_restaurant_detail.*
 
@@ -66,11 +67,14 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
                 favoriteCount -= 1
                 tv_favoriteCount.text = favoriteCount.toString()
                 iv_isFavorite.setImageResource(R.drawable.emptyheart)
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(selectedRestaurant.restaurantOid);
+
             }else{  //즐겨찾기 추가
                 isFavorite = true
                 favoriteCount += 1
                 tv_favoriteCount.text = favoriteCount.toString()
                 iv_isFavorite.setImageResource(R.drawable.fillheart)
+                FirebaseMessaging.getInstance().subscribeToTopic(selectedRestaurant.restaurantOid);
             }
         }
 
