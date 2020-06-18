@@ -55,6 +55,7 @@ class SearchedRestaurantDetailActivity : AppCompatActivity() {
         var infoBundle = Bundle()
         infoBundle.putString("description", selectedRestaurant.description)
         infoBundle.putString("address", selectedRestaurant.address)
+        infoBundle.putString("restaurant_id", selectedRestaurant.restaurantOid)
         tv_rating.text = (Math.round(selectedRestaurant.grade*10)/10.0).toString();
         ratingBar.rating = (Math.round(selectedRestaurant.grade*10)/10.0).toFloat()
 
