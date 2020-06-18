@@ -21,6 +21,8 @@ class BottomFavoriteRestaurantListViewAdapter (val context: Context, val list: A
             holder.favorite_restaurant_food_title = view.findViewById(R.id.bottom_favo_restau_restaurant_name)
             holder.favorite_restaurant_food_price = view.findViewById(R.id.bottom_favo_restau_food_price)
             holder.favorite_restaurant_food_category = view.findViewById(R.id.bottom_favo_restau_food_name)
+            holder.favorite_restaurant_aveGrade = view.findViewById(R.id.gagqgr)
+            holder.favorite_restaurant_saleOn = view.findViewById(R.id.qweqergnfawf)
 
             view.tag = holder
         }else{
@@ -30,8 +32,10 @@ class BottomFavoriteRestaurantListViewAdapter (val context: Context, val list: A
         val item = list[position]
         holder.favorite_restaurant_food_img?.setImageResource(item.image)
         holder.favorite_restaurant_food_title?.text = item.title
-        holder.favorite_restaurant_food_price?.text = item.price.toString()
+        holder.favorite_restaurant_food_price?.text = item.restaurnat_address
         holder.favorite_restaurant_food_category?.text = item.category
+        holder.favorite_restaurant_aveGrade?.text = item.avrGrade
+        holder.favorite_restaurant_saleOn?.text = item.saleOn
 
         return view
     }
@@ -53,6 +57,9 @@ class BottomFavoriteRestaurantListViewAdapter (val context: Context, val list: A
         var favorite_restaurant_food_title : TextView? = null
         var favorite_restaurant_food_price : TextView? = null
         var favorite_restaurant_food_category : TextView? = null
+        var favorite_restaurant_aveGrade : TextView? = null
+        var favorite_restaurant_saleOn : TextView? = null
+
     }
 
 }
