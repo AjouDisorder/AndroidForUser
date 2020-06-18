@@ -6,11 +6,14 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
 import com.example.ttruserver2.models.OriginMenuModel
 import com.example.ttruserver2.models.SearchedMenuModel
 import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.searched_menu_detail.*
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -37,6 +40,9 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
             "반찬&과일" to R.drawable.menu_fruit, "떡&기타" to R.drawable.menu_ricecake,
             "샐러드&다이어트" to R.drawable.menu_salad, "편의점" to R.drawable.menu_convstore)
 
+        val storage = Firebase.storage
+        val storageReference = storage.reference
+
         //menu data assign
         tv_restaurantTitleInMenu.text = selectedMenu.restaurantTitle
         tv_titleInMenu.text = selectedMenu.menuTitle
@@ -44,6 +50,14 @@ class SearchedMenuDetailActivity : AppCompatActivity() {
         tv_discountPriceInMenu.text = selectedMenu.discountedPrice.toString()
         tv_discountInMenu.text = selectedMenu.discount.toString()
         searched_menu_pic.setImageResource(menuTypeToIcons[selectedMenu.menuType]!!)
+
+        val pathReference = storageReference.child("promotes/${selectedMenu.menuOid}.jpg")
+        pathReference.downloadUrl.addOnSuccessListener {uri ->
+            Glide.with(this)
+                .load(uri.toString())
+                .into(searched_menu_pic)
+        }.addOnFailureListener{}
+
 
         btn_toPayment.setOnClickListener{
             var intent = Intent(this, CreateTicketActivity::class.java)

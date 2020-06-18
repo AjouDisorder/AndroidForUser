@@ -143,12 +143,13 @@ class CreateTicketActivity : AppCompatActivity() {
                                                 Toast.makeText(this@CreateTicketActivity, "$t", Toast.LENGTH_LONG).show()
                                             }
                                             override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                                                val intent = Intent(this@CreateTicketActivity, MainActivity::class.java)
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                                startActivity(intent)
+
                                             }
                                         })
+                                        val intent = Intent(this@CreateTicketActivity, MainActivity::class.java)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        startActivity(intent)
                                     }
                                 }
                             })

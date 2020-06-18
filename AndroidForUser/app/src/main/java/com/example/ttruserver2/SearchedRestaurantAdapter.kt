@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestaurantModel>) : RecyclerView.Adapter<SearchedRestaurantAdapter.CustomViewHolder>(){
 
@@ -16,6 +19,9 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
         "족발&보쌈" to R.drawable.store_jokbal, "돈까스&일식&회" to R.drawable.store_japan, "양식&아시안" to R.drawable.store_american,
         "패스트푸드" to R.drawable.store_fastfood, "분식" to R.drawable.store_snack, "카페&디저트" to R.drawable.store_dessert,
         "찜&탕&찌개" to R.drawable.store_soup, "도시락" to R.drawable.store_dosirak, "중국집" to R.drawable.store_china)
+
+    private val storage = Firebase.storage
+    private val storageReference = storage.reference
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchedRestaurantAdapter.CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.restaurant_list_item, parent, false)
@@ -36,6 +42,14 @@ class SearchedRestaurantAdapter (val restaurantList: ArrayList<SearchedRestauran
 
     override fun onBindViewHolder(holder: SearchedRestaurantAdapter.CustomViewHolder, position: Int) {
         holder.restaurantPicture.setImageResource(restaurantTypeToIcons[restaurantList[position].type]!!)
+
+        val pathReference = storageReference.child("marts/${restaurantList[position].restaurantOid}.jpg")
+        pathReference.downloadUrl.addOnSuccessListener {uri ->
+            Glide.with(holder.itemView)
+                .load(uri.toString())
+                .into(holder.restaurantPicture)
+        }.addOnFailureListener{}
+
         holder.restaurantType.text = restaurantList.get(position).type
         holder.restaurantTitle.text = restaurantList.get(position).title
         holder.restaurantGrade.text = (Math.round(restaurantList.get(position).grade*10)/10.0).toString()

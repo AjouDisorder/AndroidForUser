@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.ttruserver2.models.SearchedMenuModel
-import com.example.ttruserver2.models.SearchedRestaurantModel
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 class SearchedMenuAdapter(private val menuList: ArrayList<SearchedMenuModel>) : RecyclerView.Adapter<SearchedMenuAdapter.CustomViewHolder>(){
 
@@ -20,6 +21,9 @@ class SearchedMenuAdapter(private val menuList: ArrayList<SearchedMenuModel>) : 
         "면" to R.drawable.menu_noodle, "분식&야식" to R.drawable.menu_snack, "찜&탕&찌개" to R.drawable.menu_soup,
         "반찬&과일" to R.drawable.menu_fruit, "떡&기타" to R.drawable.menu_ricecake,
         "샐러드&다이어트" to R.drawable.menu_salad, "편의점" to R.drawable.menu_convstore)
+
+    private val storage = Firebase.storage
+    private val storageReference = storage.reference
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchedMenuAdapter.CustomViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.menu_list_item, parent, false)
@@ -40,6 +44,13 @@ class SearchedMenuAdapter(private val menuList: ArrayList<SearchedMenuModel>) : 
 
     override fun onBindViewHolder(holder: SearchedMenuAdapter.CustomViewHolder, position: Int) {
         holder.menuPicture.setImageResource(menuTypeToIcons[menuList[position].menuType]!!)
+        val pathReference = storageReference.child("promotes/${menuList[position].menuOid}.jpg")
+        pathReference.downloadUrl.addOnSuccessListener {uri ->
+            Glide.with(holder.itemView)
+                .load(uri.toString())
+                .into(holder.menuPicture)
+        }.addOnFailureListener{}
+
         holder.menuTitle.text = menuList.get(position).menuTitle
         holder.startTime.text = menuList.get(position).startTime
         holder.endTime.text = menuList.get(position).endTime
