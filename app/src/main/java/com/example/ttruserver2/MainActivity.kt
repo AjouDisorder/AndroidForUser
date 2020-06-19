@@ -268,7 +268,7 @@ class MainActivity : AppCompatActivity(){
                     } else {
                         latitude = location.latitude
                         longitude = location.longitude
-                        mResultList = mgitGeocoder.getFromLocation(
+                        mResultList = mGeocoder.getFromLocation(
                             latitude!!, longitude!!, 1
                         )
                         currentLocation = mResultList[0].getAddressLine(0)
