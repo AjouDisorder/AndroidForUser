@@ -35,7 +35,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="50dp"
-        android:background="#92CFBF"
+        android:background="#5c91be"
         android:layout_width="match_parent"
         android:layout_height="60dp"/>
     <TextView
@@ -45,7 +45,7 @@
         android:textSize="20dp"
         android:padding="20dp"
         android:gravity="center"
-        android:textColor="#92CFBF"
+        android:textColor="#5c91be"
         android:text="회원가입"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

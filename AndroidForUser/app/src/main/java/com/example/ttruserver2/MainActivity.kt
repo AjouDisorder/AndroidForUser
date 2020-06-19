@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(){
             R.drawable.store_convstore, R.drawable.store_korean, R.drawable.store_chicken, R.drawable.store_pizza,
             R.drawable.store_jokbal, R.drawable.store_japan, R.drawable.store_american, R.drawable.store_fastfood,
             R.drawable.store_snack, R.drawable.store_dessert, R.drawable.store_soup, R.drawable.store_dosirak, R.drawable.store_china)
-        val storeTypes = arrayOf("지도 검색", "뷔페&샐러드", "술집", "편의점", "한식", "치킨", "피자", "족발&보쌈",
+        val storeTypes = arrayOf("전체 검색", "뷔페&샐러드", "술집", "편의점", "한식", "치킨", "피자", "족발&보쌈",
             "돈까스&일식&회", "양식&아시안", "패스트푸드", "분식", "카페&디저트", "찜&탕&찌개", "도시락", "중국집")
 
         var selectedIconType = 0    //0일때 "할인음식", 1일때 "가게검색"
@@ -122,8 +122,82 @@ class MainActivity : AppCompatActivity(){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
             }else{
-                val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
-                startActivity(intent)
+
+                /////
+                iMyService.getFavoriteList(UserData.getOid().toString()).enqueue(object :
+                    Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Toast.makeText(this@MainActivity, "getFavoriteList: Fail!", Toast.LENGTH_SHORT).show()
+                        Log.d("getFavRes", "getFavRes_Fail")
+                    }
+
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        Toast.makeText(this@MainActivity, "getFavoriteList: Success!", Toast.LENGTH_SHORT).show()
+                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+
+                        Log.d("getFavRes", "getFavRes_Success")
+                        val result = response?.body()?.string()
+                        Log.d("deleteResFav:", result.toString())
+                        val jsonArray = JSONArray(result)
+                        for (i in 0 until jsonArray.length()){
+                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                            val restaurantOid = jsonObject.getString("_id")
+                            val address = jsonObject.getString("address")
+                            val grade = jsonObject.getDouble("avrGrade")
+                            val menuidList = jsonObject.getString("menuidList")
+                            var onSale = false
+                            if (menuidList != null){
+                                var onSale = true
+                            }
+                            val description = jsonObject.getString("description")
+                            val phone = jsonObject.getString("phone")
+                            var originMenuList =  arrayListOf<OriginMenuModel>()
+                            val originMenuJson = jsonObject.getJSONArray("originMenuList")
+                            for(i in 0.until(originMenuJson.length())){
+                                val originMenu: JSONObject = originMenuJson.getJSONObject(i)
+                                val originMenuTitle = originMenu.getString("title")
+                                val originMenuPrice = originMenu.getInt("originPrice")
+                                originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
+                            }
+
+                            val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                            val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+
+                            val favoriteCount = jsonObject.getInt("favoriteCount")
+                            var saleOn = " "
+                            if (menuidList != null){
+                                var saleOn = "할인 중"
+                            }
+
+                            val ulng = UserData.getLng()
+                            val ulat = UserData.getLat()
+
+                            val km_distanceFrom = distanceFrom(lat as Double, lng as Double, ulat as Double, ulng as Double)
+                            Log.d("km_ghkrdls", km_distanceFrom.toString())
+
+                            val distance = Math.round(km_distanceFrom*10.0)/10.0
+                            Log.d("km_ghkrdls", distance.toString())
+
+                            val title = jsonObject.getString("title")
+                            val type = jsonObject.getString("type")
+                            val _id = restaurantOid
+
+                            searchedRestaurantModelList.add(
+                                SearchedRestaurantModel(_id, type, title, grade,
+                                    distance, onSale, favoriteCount, description, address, phone, originMenuList,
+                                    lng as Double, lat as Double)
+                            )
+                        }
+                        val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                        startActivity(intent)
+                    }
+
+                })
+
+                /////
+//                val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
+//                startActivity(intent)
             }
         }
         bottom_tab_coupon.setOnClickListener {
@@ -136,6 +210,7 @@ class MainActivity : AppCompatActivity(){
             }
         }
         bottom_tab_my_info.setOnClickListener {
+            Toast.makeText(this, "sibal", Toast.LENGTH_SHORT).show()
             if(UserData.getOid() == null){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
@@ -191,52 +266,124 @@ class MainActivity : AppCompatActivity(){
                 }
             }else if(selectedIconType == 1){
                 //if 지도로 보기인 경우 따로
-                iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                if (storeTypes[position] == "전체 검색") {
+                    val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+//                    val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
+
+                    for (index in 1..15){
+                        iMyService.getRestaurantByCategory(storeTypes[index], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
+                            }
+                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                val result = response.body()?.string()
+                                val jsonArray = JSONArray(result)
+//                                val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+
+                                for (i in 0.until(jsonArray.length())){
+                                    val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                                    val _id = jsonObject.getString("_id")
+                                    val title = jsonObject.getString("title")
+                                    val grade = jsonObject.getDouble("avrGrade")
+                                    val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                                    var onSale = true
+                                    if (jsonObject.getJSONArray("menuidList").length() == 0){
+                                        onSale = false
+                                    }
+                                    val favoriteCount = jsonObject.getInt("favoriteCount")
+                                    val description = jsonObject.getString("description")
+                                    val address = jsonObject.getString("address")
+                                    val phone = jsonObject.getString("phone")
+
+                                    var originMenuList =  arrayListOf<OriginMenuModel>()
+                                    val originMenuJson = jsonObject.getJSONArray("originMenuList")
+                                    for(i in 0.until(originMenuJson.length())){
+                                        val originMenu: JSONObject = originMenuJson.getJSONObject(i)
+                                        val originMenuTitle = originMenu.getString("title")
+                                        val originMenuPrice = originMenu.getInt("originPrice")
+                                        originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
+                                    }
+
+                                    val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                                    val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+
+                                    if(_id != null){
+                                        searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[index], title, grade,
+                                            distance, onSale, favoriteCount, description, address, phone, originMenuList,
+                                            lng as Double, lat as Double))
+                                    }
+//                                    searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[index], title, grade,
+//                                        distance, onSale, favoriteCount, description, address, phone, originMenuList,
+//                                        lng as Double, lat as Double))
+//                                    Log.d("checkfavarray", searchedRestaurantModelList.toString())
+//                                    intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+//                                    startActivity(intent)
+
+                                }
+                                if (index==15){
+                                    val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+                                    intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                                    startActivity(intent)
+                                }
+                            }
+
+                        })
+//                        if (index==15){
+//                            val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+//                            intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+//                            startActivity(intent)
+//                        }
                     }
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        val result = response.body()?.string()
-                        val jsonArray = JSONArray(result)
-                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
 
-                        for (i in 0.until(jsonArray.length())){
-                            val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                            val _id = jsonObject.getString("_id")
-                            val title = jsonObject.getString("title")
-                            val grade = jsonObject.getDouble("avrGrade")
-                            val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                            var onSale = true
-                            if (jsonObject.getJSONArray("menuidList").length() == 0){
-                                onSale = false
-                            }
-                            val favoriteCount = jsonObject.getInt("favoriteCount")
-                            val description = jsonObject.getString("description")
-                            val address = jsonObject.getString("address")
-                            val phone = jsonObject.getString("phone")
-
-                            var originMenuList =  arrayListOf<OriginMenuModel>()
-                            val originMenuJson = jsonObject.getJSONArray("originMenuList")
-                            for(i in 0.until(originMenuJson.length())){
-                                val originMenu: JSONObject = originMenuJson.getJSONObject(i)
-                                val originMenuTitle = originMenu.getString("title")
-                                val originMenuPrice = originMenu.getInt("originPrice")
-                                originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
-                            }
-
-                            val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
-                            val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
-
-                            searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[position], title, grade,
-                                distance, onSale, favoriteCount, description, address, phone, originMenuList,
-                                lng as Double, lat as Double))
+                } else {
+                    iMyService.getRestaurantByCategory(storeTypes[position], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                         }
-                        val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
-                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
-                        startActivity(intent)
-                    }
-                })
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            val result = response.body()?.string()
+                            val jsonArray = JSONArray(result)
+                            val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+
+                            for (i in 0.until(jsonArray.length())){
+                                val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+
+                                val _id = jsonObject.getString("_id")
+                                val title = jsonObject.getString("title")
+                                val grade = jsonObject.getDouble("avrGrade")
+                                val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
+                                var onSale = true
+                                if (jsonObject.getJSONArray("menuidList").length() == 0){
+                                    onSale = false
+                                }
+                                val favoriteCount = jsonObject.getInt("favoriteCount")
+                                val description = jsonObject.getString("description")
+                                val address = jsonObject.getString("address")
+                                val phone = jsonObject.getString("phone")
+
+                                var originMenuList =  arrayListOf<OriginMenuModel>()
+                                val originMenuJson = jsonObject.getJSONArray("originMenuList")
+                                for(i in 0.until(originMenuJson.length())){
+                                    val originMenu: JSONObject = originMenuJson.getJSONObject(i)
+                                    val originMenuTitle = originMenu.getString("title")
+                                    val originMenuPrice = originMenu.getInt("originPrice")
+                                    originMenuList.add(OriginMenuModel(originMenuTitle, originMenuPrice))
+                                }
+
+                                val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
+                                val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
+
+                                searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[position], title, grade,
+                                    distance, onSale, favoriteCount, description, address, phone, originMenuList,
+                                    lng as Double, lat as Double))
+                            }
+                            val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
+                            intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                            startActivity(intent)
+                        }
+                    })
+                }
             }
         }
         //findBySearchBar
@@ -250,6 +397,20 @@ class MainActivity : AppCompatActivity(){
         viewpager = findViewById(R.id.main_ad_viewpager) as ViewPager
         val adapter = ViewPagerAdapter(this)
         viewpager.adapter = adapter
+    }
+
+    private fun distanceFrom(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+        // Return distance between 2 points, stored as 2 pair location;
+        val EARTH_RADIUS = 3958.75
+        val KMETER_CONVERSION = 1.6093
+
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLng = Math.toRadians(lng2 - lng1)
+        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + (Math.cos(Math.toRadians(lat1))
+                * Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2))
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        val dist = EARTH_RADIUS * c
+        return dist * KMETER_CONVERSION
     }
 
 
