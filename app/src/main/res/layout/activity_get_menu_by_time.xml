@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.FirstFragment">
+
+    <!--    <TextView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:text="first"-->
+    <!--        android:textSize="100dp"/>-->
+
+    <ImageView
+        android:id="@+id/iv_invisBox2"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="60dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime2"
+        app:srcCompat="@drawable/logo_emptybox" />
+
+    <TextView
+        android:id="@+id/tv_invisMenuList2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="등록된 메뉴가 없습니다.."
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/iv_invisBox2"
+        tools:layout_editor_absoluteX="27dp" />
+
+    <ImageView
+        android:id="@+id/iv_invisTeardrop2"
+        android:layout_width="100dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="44dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rv_getMenuByTime2"
+        app:srcCompat="@drawable/logo_teardrop" />
+
+    <LinearLayout
+        android:id="@+id/date_time_setting"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2020/07/01"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/tv_currentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:text="12:24"
+            android:textSize="30dp" />
+
+        <ImageView
+            android:id="@+id/time_search_refresh"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/logo_refresh" />
+        <Spinner
+            android:id="@+id/spinner_km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rv_getMenuByTime2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/date_time_setting">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_getMenuByTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_time_setting" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
