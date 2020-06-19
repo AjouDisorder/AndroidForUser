@@ -16,8 +16,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if(remoteMessage?.notification != null){
 
         }
-
-
     }
     private fun sendNotification(title: String?, body: String){
         val intent = Intent(this, MainActivity::class.java)
