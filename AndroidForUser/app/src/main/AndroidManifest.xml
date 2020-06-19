@@ -39,7 +39,7 @@
         <activity android:name=".BottomTab.FavoriteRestaurant.BottomFavoriteRestaurantActivity" />
         <activity
             android:name=".IntroSplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
