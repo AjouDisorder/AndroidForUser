@@ -13,6 +13,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ttruserver2.Retrofit.IMyService
 import com.example.ttruserver2.Retrofit.RetrofitClient
@@ -48,9 +49,7 @@ class GetMenuByTimeActivity : AppCompatActivity() {
         val c: Calendar = Calendar.getInstance()
         val hh=c.get(Calendar.HOUR_OF_DAY)
         val mm=c.get(Calendar.MINUTE)
-
         //spinner
-
 
         tv_now.setOnClickListener {
             val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
@@ -70,180 +69,25 @@ class GetMenuByTimeActivity : AppCompatActivity() {
         val currentTime = LocalTime.now()
         tv_now.text = now.toString()
         tv_currentTime.text = currentTime.toString().substring(0, 5)
-        var searchedMenuModelList = arrayListOf<SearchedMenuModel>()
+        val searchedMenuModelList = arrayListOf<SearchedMenuModel>()
 
-        val item_km = arrayOf("거리상관없음","0.5km","1km")
+        val item_km = arrayOf("2km 이내","1km 이내", "0.5km 이내")
         val myAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, item_km)
         spinner_km.adapter = myAdapter
+        var selectedItem = 0    //0이면 2km, 1이면 1km, 2면 0.5km
         spinner_km.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
             }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (position) {
-                    0 -> {
-                        Toast.makeText(this@GetMenuByTimeActivity, "거리상관없음", Toast.LENGTH_SHORT)
-                            .show()
+                    0 -> {  //2km
+                        selectedItem = 0
                     }
-                    1 -> {
-                        Toast.makeText(this@GetMenuByTimeActivity, "0.5km", Toast.LENGTH_SHORT)
-                            .show()
-//                        var searchedMenuModelList_05 = arrayListOf<SearchedMenuModel>()
-                        searchedMenuModelList.clear()
-
-                        iMyService.getMenuByTime(
-                            now.year,
-                            now.monthValue,
-                            now.dayOfMonth,
-                            currentTime.hour,
-                            currentTime.minute,
-                            UserData.getLat(),
-                            UserData.getLng()
-                        )
-                            .enqueue(object : Callback<ResponseBody> {
-                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                    Toast.makeText(
-                                        this@GetMenuByTimeActivity,
-                                        "Fail : $t",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-
-                                override fun onResponse(
-                                    call: Call<ResponseBody>,
-                                    response: Response<ResponseBody>
-                                ) {
-                                    val result = response.body()?.string()
-                                    val jsonArray = JSONArray(result)
-
-                                    if (jsonArray.length() == 0) {
-                                        iv_invisBox2.visibility = View.VISIBLE
-                                        iv_invisTeardrop2.visibility = View.VISIBLE
-                                        tv_invisMenuList2.visibility = View.VISIBLE
-                                    }
-
-                                    for (i in 0.until(jsonArray.length())) {
-                                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                                        val token = jsonObject.getString("token")
-                                        val _id = jsonObject.getString("_id")
-                                        val restaurantTitle =
-                                            jsonObject.getString("restaurantTitle")
-                                        val restaurantOid = jsonObject.getJSONObject("originMenu")
-                                            .getString("restaurant_id")
-                                        val type = jsonObject.getString("type")
-                                        val title = jsonObject.getString("title")
-                                        val startTime = jsonObject.getString("startDateObject")
-                                            .substring(11, 16)
-                                        val endTime =
-                                            jsonObject.getString("endDateObject").substring(11, 16)
-                                        val distance =
-                                            Math.round(jsonObject.getDouble("distance") / 100.0) / 10.0
-                                        val quantity = jsonObject.getInt("quantity")
-                                        val discount = jsonObject.getInt("discount")
-                                        val originPrice = jsonObject.getJSONObject("originMenu")
-                                            .getInt("originPrice")
-                                        val discountedPrice =
-                                            originPrice - (originPrice * discount / 100)
-                                        val method = jsonObject.getString("method")
-
-                                        if (distance <= 0.5.toDouble()) {
-                                            searchedMenuModelList.add(
-                                                SearchedMenuModel(
-                                                    token,
-                                                    _id,
-                                                    restaurantTitle,
-                                                    restaurantOid,
-                                                    type,
-                                                    title,
-                                                    startTime,
-                                                    endTime,
-                                                    distance,
-                                                    quantity,
-                                                    discount,
-                                                    discountedPrice,
-                                                    originPrice,
-                                                    method
-                                                )
-                                            )
-                                        }
-
-
-                                        rv_getMenuByTime.layoutManager = LinearLayoutManager(
-                                            this@GetMenuByTimeActivity,
-                                            LinearLayoutManager.VERTICAL,
-                                            false
-                                        )
-                                        rv_getMenuByTime.setHasFixedSize(true)
-                                        rv_getMenuByTime.adapter =
-                                            SearchedMenuAdapter(searchedMenuModelList)
-                                    }
-                                }
-                            })
-
+                    1 -> {  //1km
+                        selectedItem = 1
                     }
-                    2 -> {
-                        Toast.makeText(this@GetMenuByTimeActivity, "1km", Toast.LENGTH_SHORT).show()
-//                        var searchedMenuModelList_1 = arrayListOf<SearchedMenuModel>()
-                        searchedMenuModelList.clear()
-
-
-                        iMyService.getMenuByTime(now.year, now.monthValue, now.dayOfMonth, currentTime.hour, currentTime.minute,
-                            UserData.getLat(), UserData.getLng())
-                            .enqueue(object : Callback<ResponseBody> {
-                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                    Toast.makeText(this@GetMenuByTimeActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
-                                }
-                                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                                    val result = response.body()?.string()
-                                    val jsonArray = JSONArray(result)
-
-                                    if (jsonArray.length() == 0){
-                                        iv_invisBox2.visibility = View.VISIBLE
-                                        iv_invisTeardrop2.visibility = View.VISIBLE
-                                        tv_invisMenuList2.visibility = View.VISIBLE
-                                    }
-
-                                    for (i in 0.until(jsonArray.length())){
-                                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-
-                                        val token = jsonObject.getString("token")
-                                        val _id = jsonObject.getString("_id")
-                                        val restaurantTitle = jsonObject.getString("restaurantTitle")
-                                        val restaurantOid = jsonObject.getJSONObject("originMenu").getString("restaurant_id")
-                                        val type = jsonObject.getString("type")
-                                        val title = jsonObject.getString("title")
-                                        val startTime = jsonObject.getString("startDateObject").substring(11, 16)
-                                        val endTime = jsonObject.getString("endDateObject").substring(11, 16)
-                                        val distance = Math.round(jsonObject.getDouble("distance")/100.0)/10.0
-                                        val quantity = jsonObject.getInt("quantity")
-                                        val discount = jsonObject.getInt("discount")
-                                        val originPrice = jsonObject.getJSONObject("originMenu").getInt("originPrice")
-                                        val discountedPrice = originPrice - (originPrice * discount / 100)
-                                        val method = jsonObject.getString("method")
-
-                                        if(distance<=1.toDouble()){
-                                            searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title,
-                                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
-                                        }
-
-
-                                        rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)
-                                        rv_getMenuByTime.setHasFixedSize(true)
-                                        rv_getMenuByTime.adapter = SearchedMenuAdapter(searchedMenuModelList)
-                                    }
-                                }
-                            })
-
-                    }
-                    else -> {
-                        println("Rmx")
+                    2 -> {  //0.5km
+                        selectedItem = 2
                     }
                 }
             }
@@ -350,8 +194,21 @@ class GetMenuByTimeActivity : AppCompatActivity() {
                             val discountedPrice = originPrice - (originPrice * discount / 100)
                             val method = jsonObject.getString("method")
 
-                            searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title,
-                                startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
+                            if (selectedItem == 0){ //2km
+                                searchedMenuModelList.add(SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title,
+                                    startTime, endTime, distance, quantity, discount, discountedPrice, originPrice, method))
+                            }
+                            else if (selectedItem == 1){ //1km
+                                if (distance <= 1.0) { searchedMenuModelList.add(
+                                    SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
+                                        distance, quantity, discount, discountedPrice, originPrice, method))
+                                }
+                            }else if (selectedItem == 2){ //0.5km
+                                if (distance <= 0.5) { searchedMenuModelList.add(
+                                    SearchedMenuModel(token, _id, restaurantTitle, restaurantOid, type, title, startTime, endTime,
+                                        distance, quantity, discount, discountedPrice, originPrice, method))
+                                }
+                            }
                         }
                         rv_getMenuByTime.layoutManager = LinearLayoutManager(this@GetMenuByTimeActivity, LinearLayoutManager.VERTICAL, false)
                         rv_getMenuByTime.setHasFixedSize(true)

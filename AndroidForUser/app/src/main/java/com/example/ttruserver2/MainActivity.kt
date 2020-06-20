@@ -71,11 +71,13 @@ class MainActivity : AppCompatActivity(){
             val intent = Intent(this@MainActivity, SetAddressActivity::class.java)
             startActivity(intent)
         }
+
         if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
             UserData.setLng(127.046532)
             UserData.setLat(37.283602)
         }
-        /*if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
+        /*
+        if (UserData.getLng() == null){ //위치설정을 안했으니까 현재 위치로 넣자 (임시로 아주대학교 위도 경도로)
             getLastLocation()
         }else{
             Locationtxt.text = UserData.getAddress()
@@ -122,35 +124,33 @@ class MainActivity : AppCompatActivity(){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
             }else{
-
-                /////
                 iMyService.getFavoriteList(UserData.getOid().toString()).enqueue(object :
                     Callback<ResponseBody> {
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "getFavoriteList: Fail!", Toast.LENGTH_SHORT).show()
-                        Log.d("getFavRes", "getFavRes_Fail")
+                        Toast.makeText(this@MainActivity, "Fail : $t", Toast.LENGTH_SHORT).show()
                     }
-
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        Toast.makeText(this@MainActivity, "getFavoriteList: Success!", Toast.LENGTH_SHORT).show()
-                        val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
-
-                        Log.d("getFavRes", "getFavRes_Success")
-                        val result = response?.body()?.string()
-                        Log.d("deleteResFav:", result.toString())
+                        val favoriteRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
+                        val result = response.body()?.string()
                         val jsonArray = JSONArray(result)
-                        for (i in 0 until jsonArray.length()){
+
+                        for (i in 0.until(jsonArray.length())){
                             val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-                            val restaurantOid = jsonObject.getString("_id")
-                            val address = jsonObject.getString("address")
+
+                            val _id = jsonObject.getString("_id")
+                            val type = jsonObject.getString("type")
+                            val title = jsonObject.getString("title")
                             val grade = jsonObject.getDouble("avrGrade")
-                            val menuidList = jsonObject.getString("menuidList")
-                            var onSale = false
-                            if (menuidList != null){
-                                var onSale = true
+
+                            var onSale = true
+                            if (jsonObject.getJSONArray("menuidList").length() == 0){
+                                onSale = false
                             }
+                            val favoriteCount = jsonObject.getInt("favoriteCount")
                             val description = jsonObject.getString("description")
+                            val address = jsonObject.getString("address")
                             val phone = jsonObject.getString("phone")
+
                             var originMenuList =  arrayListOf<OriginMenuModel>()
                             val originMenuJson = jsonObject.getJSONArray("originMenuList")
                             for(i in 0.until(originMenuJson.length())){
@@ -163,41 +163,26 @@ class MainActivity : AppCompatActivity(){
                             val lng = jsonObject.getJSONObject("location").getJSONArray("coordinates").get(0)
                             val lat= jsonObject.getJSONObject("location").getJSONArray("coordinates").get(1)
 
-                            val favoriteCount = jsonObject.getInt("favoriteCount")
-                            var saleOn = " "
-                            if (menuidList != null){
-                                var saleOn = "할인 중"
-                            }
+                            val userLocation = Location("userPoint")
+                            userLocation.latitude = UserData.getLat() as Double
+                            userLocation.longitude = UserData.getLng() as Double
+                            val restaurantLocation = Location("restaurantPoint")
+                            restaurantLocation.latitude = lat as Double
+                            restaurantLocation.longitude = lng as Double
+                            val distance : Double = Math.round((userLocation.distanceTo(restaurantLocation)).toDouble()/100.0)/10.0
 
-                            val ulng = UserData.getLng()
-                            val ulat = UserData.getLat()
-
-                            val km_distanceFrom = distanceFrom(lat as Double, lng as Double, ulat as Double, ulng as Double)
-                            Log.d("km_ghkrdls", km_distanceFrom.toString())
-
-                            val distance = Math.round(km_distanceFrom*10.0)/10.0
-                            Log.d("km_ghkrdls", distance.toString())
-
-                            val title = jsonObject.getString("title")
-                            val type = jsonObject.getString("type")
-                            val _id = restaurantOid
-
-                            searchedRestaurantModelList.add(
-                                SearchedRestaurantModel(_id, type, title, grade,
+                            if(_id != null){
+                                favoriteRestaurantModelList.add(SearchedRestaurantModel(_id, type, title, grade,
                                     distance, onSale, favoriteCount, description, address, phone, originMenuList,
-                                    lng as Double, lat as Double)
-                            )
+                                    lng, lat))
+                            }
                         }
                         val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
-                        intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
+                        intent.putExtra("searchedRestaurantModelList", favoriteRestaurantModelList)
                         startActivity(intent)
                     }
 
                 })
-
-                /////
-//                val intent = Intent(this, BottomFavoriteRestaurantActivity::class.java)
-//                startActivity(intent)
             }
         }
         bottom_tab_coupon.setOnClickListener {
@@ -210,14 +195,12 @@ class MainActivity : AppCompatActivity(){
             }
         }
         bottom_tab_my_info.setOnClickListener {
-            Toast.makeText(this, "sibal", Toast.LENGTH_SHORT).show()
             if(UserData.getOid() == null){
                 val loginIntent = Intent(this, LogInActivity::class.java)
                 startActivity(loginIntent)
             } else {
                 val intent = Intent(this, BottomMyInfoActivity::class.java)
                 startActivity(intent)
-                finish()
             }
         }
 
@@ -268,7 +251,6 @@ class MainActivity : AppCompatActivity(){
                 //if 지도로 보기인 경우 따로
                 if (storeTypes[position] == "전체 검색") {
                     val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
-//                    val intent = Intent(this@MainActivity, SearchedMenuListActivity::class.java)
 
                     for (index in 1..15){
                         iMyService.getRestaurantByCategory(storeTypes[index], UserData.getLat(), UserData.getLng()).enqueue(object : Callback<ResponseBody> {
@@ -278,7 +260,6 @@ class MainActivity : AppCompatActivity(){
                             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                                 val result = response.body()?.string()
                                 val jsonArray = JSONArray(result)
-//                                val searchedRestaurantModelList = arrayListOf<SearchedRestaurantModel>()
 
                                 for (i in 0.until(jsonArray.length())){
                                     val jsonObject: JSONObject = jsonArray.getJSONObject(i)
@@ -313,13 +294,6 @@ class MainActivity : AppCompatActivity(){
                                             distance, onSale, favoriteCount, description, address, phone, originMenuList,
                                             lng as Double, lat as Double))
                                     }
-//                                    searchedRestaurantModelList.add(SearchedRestaurantModel(_id, storeTypes[index], title, grade,
-//                                        distance, onSale, favoriteCount, description, address, phone, originMenuList,
-//                                        lng as Double, lat as Double))
-//                                    Log.d("checkfavarray", searchedRestaurantModelList.toString())
-//                                    intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
-//                                    startActivity(intent)
-
                                 }
                                 if (index==15){
                                     val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
@@ -329,11 +303,6 @@ class MainActivity : AppCompatActivity(){
                             }
 
                         })
-//                        if (index==15){
-//                            val intent = Intent(this@MainActivity, SearchedRestaurantListActivity::class.java)
-//                            intent.putExtra("searchedRestaurantModelList", searchedRestaurantModelList)
-//                            startActivity(intent)
-//                        }
                     }
 
                 } else {
@@ -508,6 +477,18 @@ class MainActivity : AppCompatActivity(){
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 getLastLocation()
             }
+        }
+    }
+
+    @Override
+    override fun onBackPressed(){
+        val curTime: Long = System.currentTimeMillis()
+        val gapTime: Long = curTime - backBtnTime
+        if (0 <= gapTime && 2000 >= gapTime){
+            super.onBackPressed()
+        }else{
+            backBtnTime = curTime
+            Toast.makeText(this, "한번 더 누르면 종료됩니다", Toast.LENGTH_SHORT).show()
         }
     }
 }
